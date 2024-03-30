@@ -26,6 +26,7 @@ public class DispatchHttpHandler implements HttpHandler {
 
     @Override
     public @NonNull Mono<Void> handle(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
+        log.info("Recv http request path [{}]", request.getPath().value());
         HttpExchange exchange = new HttpExchange();
         exchange.setRequest(request);
         exchange.setResponse(response);

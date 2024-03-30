@@ -14,11 +14,8 @@ import reactor.core.publisher.Mono;
 @Component("trieHttpRouter")
 public class TrieHttpRouter implements HttpRouter {
 
-
     @Override
     public Mono<Void> handle(HttpExchange exchange) {
         return Mono.empty();
     }
-
-
 }
