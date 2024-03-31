@@ -1,6 +1,6 @@
 package com.cc.flox.web;
 
-import com.cc.flox.web.exchange.HttpExchange;
+import com.cc.flox.web.endpoint.HttpExchange;
 import com.cc.flox.web.router.HttpRouter;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
