@@ -7,6 +7,7 @@ import com.cc.flox.utils.trie.command.TrieUpdateCommand;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,11 +70,14 @@ public abstract class Trie<T> {
      *
      * @param command command
      */
-    public boolean command(TrieCommand<T> command) {
+    public Future<Void> command(TrieCommand<T> command) {
         if (!started.get() && started.compareAndExchange(false, true)) {
             this.commandThread.start();
         }
-        return commandQueue.offer(command);
+        if (!commandQueue.offer(command)) {
+            command.getFuture().completeExceptionally(new RuntimeException("Command Queue offer fail."));
+        }
+        return command.getFuture();
     }
 
     /**
@@ -97,5 +101,6 @@ public abstract class Trie<T> {
             case TrieUpdateCommand<T> updateCommand -> this.root.update(updateCommand, 0, this);
             default -> log.error("Unknown command type [{}]", command.getClass().getCanonicalName());
         }
+        command.getFuture().complete(null);
     }
 }

@@ -33,7 +33,7 @@ public class TrieNode<T> {
 
     @SuppressWarnings("unchecked")
     public TrieNode(int nodeLength) {
-        this.nodes = (TrieNode<T>[]) Array.newInstance(Trie.class, nodeLength);
+        this.nodes = (TrieNode<T>[]) Array.newInstance(TrieNode.class, nodeLength);
     }
 
     /**
