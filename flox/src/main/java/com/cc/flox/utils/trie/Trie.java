@@ -71,7 +71,7 @@ public abstract class Trie<T> {
      * @param command command
      */
     public Future<Void> command(TrieCommand<T> command) {
-        if (!started.get() && started.compareAndExchange(false, true)) {
+        if (!started.get() && started.compareAndSet(false, true)) {
             this.commandThread.start();
         }
         if (!commandQueue.offer(command)) {

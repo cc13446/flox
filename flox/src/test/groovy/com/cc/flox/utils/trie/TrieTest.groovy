@@ -1,6 +1,8 @@
 package com.cc.flox.utils.trie
 
+import com.cc.flox.utils.trie.command.TrieDeleteCommand
 import com.cc.flox.utils.trie.command.TrieInsertCommand
+import com.cc.flox.utils.trie.command.TrieUpdateCommand
 import spock.lang.Specification
 
 
@@ -11,7 +13,7 @@ import spock.lang.Specification
  */
 class TrieTest extends Specification {
 
-    def "Test trie" () {
+    def "Test trie"() {
         given:
         def target = new Trie() {
             @Override
@@ -26,10 +28,28 @@ class TrieTest extends Specification {
         }
 
         when:
-        target.command(new TrieInsertCommand("key", "key")).get()
+        def key = "key"
 
         then:
-        target.get("key") == "key"
+        Objects.isNull(target.get(key))
+
+        when:
+        target.command(new TrieInsertCommand(key, key)).get()
+
+        then:
+        target.get(key) == key
+
+        when:
+        target.command(new TrieUpdateCommand(key, (s) -> s + key)).get()
+
+        then:
+        target.get(key) == key + key
+
+        when:
+        target.command(new TrieDeleteCommand(key)).get()
+
+        then:
+        Objects.isNull(target.get(key))
 
     }
 }
