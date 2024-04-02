@@ -58,7 +58,7 @@ public class TrieHttpRouter implements HttpRouter {
         if (Objects.isNull(endPoint)) {
             return Mono.error(new RuntimeException("Miss router path [" + path + "]"));
         }
-        return Mono.fromRunnable(() -> endPoint.getHandler().accept(exchange));
+        return endPoint.handler(exchange);
     }
 
     @Override
