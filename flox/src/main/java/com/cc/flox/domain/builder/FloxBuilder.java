@@ -1,13 +1,11 @@
 package com.cc.flox.domain.builder;
 
 import com.cc.flox.domain.Flox;
+import com.cc.flox.domain.extractor.RequestExtractor;
+import com.cc.flox.domain.loader.ResponseLoader;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -23,12 +21,12 @@ public class FloxBuilder {
     /**
      * HTTP请求提取器构建者
      */
-    private Supplier<Function<ServerHttpRequest, Object>> requestExtractorBuilder;
+    private Supplier<RequestExtractor<Object>> requestExtractorBuilder;
 
     /**
      * HTTP响应加载器构建者
      */
-    private Supplier<BiConsumer<Object, ServerHttpResponse>> responseLoaderBuilder;
+    private Supplier<ResponseLoader<Object>> responseLoaderBuilder;
 
     /**
      * 构建方法

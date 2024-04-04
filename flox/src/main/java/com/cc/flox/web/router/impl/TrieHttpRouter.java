@@ -28,7 +28,7 @@ public class TrieHttpRouter implements HttpRouter {
     static class HttpEndPointTrie extends Trie<HttpEndPoint> {
         @Override
         public int getNodeLength() {
-            return 54;
+            return 55;
         }
 
         @Override
@@ -41,6 +41,8 @@ public class TrieHttpRouter implements HttpRouter {
                 return 52;
             } else if (c == '_') {
                 return 53;
+            } else if (c == '/') {
+                return 54;
             }
             throw new RuntimeException("Unknown char [" + c + "] in path");
         }

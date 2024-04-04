@@ -28,9 +28,7 @@ public class HttpEndPoint {
      * handler
      */
     public Mono<Void> handler(HttpExchange exchange) {
-        return Mono.fromRunnable(() -> {
-            Object temp = flox.getRequestExtractor().apply(exchange.getRequest());
-            flox.getResponseLoader().accept(temp, exchange.getResponse());
-        });
+        return flox.getRequestExtractor().extract(exchange.getRequest())
+                .flatMap(o -> flox.getResponseLoader().loader(o, exchange.getResponse()));
     }
 }

@@ -29,21 +29,20 @@ public class MetaFloxManager implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         FloxBuilder builder = new FloxBuilder().setRequestExtractorBuilder(() -> r ->
-                r.getQueryParams()
-                        .entrySet().stream()
-                        .map(e -> e.getKey() + "=[" + e.getValue().stream().reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString() + "]")
-                        .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString()
-        ).setResponseLoaderBuilder(() -> (t,r) ->{
+                Mono.just(r.getQueryParams().entrySet().stream()
+                        .map(e -> e.getKey() + "=[" + e.getValue().stream().reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString() + "]\n")
+                        .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString())
+        ).setResponseLoaderBuilder(() -> (t, r) -> {
             r.setStatusCode(HttpStatus.OK);
             String res = (String) t;
             DataBuffer dataBuffer = r.bufferFactory().allocateBuffer(res.length());
             // 获得 OutputStream 的引用
-            try(OutputStream outputStream = dataBuffer.asOutputStream()) {
+            try (OutputStream outputStream = dataBuffer.asOutputStream()) {
                 outputStream.write(res.getBytes(StandardCharsets.UTF_8));
             } catch (IOException ioException) {
                 throw new RuntimeException(ioException);
             }
-            r.writeWith(Mono.just(dataBuffer)).block();
+            return r.writeWith(Mono.just(dataBuffer));
         });
         HttpEndPoint echoEndPoint = new HttpEndPoint("/echo", builder.builder());
         serviceManager.insertHandler(echoEndPoint).get();
