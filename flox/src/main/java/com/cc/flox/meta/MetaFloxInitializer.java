@@ -17,12 +17,13 @@ import java.nio.charset.StandardCharsets;
 
 
 /**
+ * 元流程初始化器
  * @author cc
  * @date 2024/4/2
  */
-@Order(1)
+@Order(2)
 @Component
-public class MetaFloxManager implements CommandLineRunner {
+public class MetaFloxInitializer implements CommandLineRunner {
     @Resource
     private ServiceManager serviceManager;
 

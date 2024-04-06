@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: flox
+
+meta:
+  dataSource:
+    url: r2dbc:mysql://172.23.109.148:3306/mysql
+    username: root
+    password: chenchen
