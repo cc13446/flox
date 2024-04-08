@@ -14,9 +14,20 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum DataSourceType {
+
+    /**
+     * postgresql
+     */
     Postgresql("postgresql"),
+
+    /**
+     * mysql
+     */
     Mysql("mysql");
 
+    /**
+     * jdbc url 中数据库的 code
+     */
     private final String urlCode;
 
     public static DataSourceType fromUrlCode(String urlCode) {
