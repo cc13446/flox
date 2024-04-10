@@ -26,6 +26,5 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         dataSourceManager.insert(metaConfig.getMetaDataSourceConfig().getDataSourceConfiguration());
-
     }
 }

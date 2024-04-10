@@ -1,8 +1,8 @@
 package com.cc.flox.initializer;
 
-import com.cc.flox.domain.FloxBuilder;
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.api.endpoint.ApiEndPoint;
+import com.cc.flox.domain.FloxBuilder;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * 元流程初始化器
+ *
  * @author cc
  * @date 2024/4/2
  */
@@ -29,23 +30,31 @@ public class MetaFloxInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        FloxBuilder builder = new FloxBuilder().setRequestExtractorBuilder(() -> r ->
-                Mono.just(r.getQueryParams().entrySet().stream()
+        apiManager.insertHandler(getEchoEndPoint()).get();
+    }
+
+    /**
+     * 获取 echo end point
+     *
+     * @return echo end point
+     */
+    private ApiEndPoint getEchoEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> r -> Mono.just(r.getQueryParams().entrySet().stream()
                         .map(e -> e.getKey() + "=[" + e.getValue().stream().reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString() + "]\n")
-                        .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString())
-        ).setResponseLoaderBuilder(() -> (t, r) -> {
-            r.setStatusCode(HttpStatus.OK);
-            String res = (String) t;
-            DataBuffer dataBuffer = r.bufferFactory().allocateBuffer(res.length());
-            // 获得 OutputStream 的引用
-            try (OutputStream outputStream = dataBuffer.asOutputStream()) {
-                outputStream.write(res.getBytes(StandardCharsets.UTF_8));
-            } catch (IOException ioException) {
-                throw new RuntimeException(ioException);
-            }
-            return r.writeWith(Mono.just(dataBuffer));
-        });
-        ApiEndPoint echoEndPoint = new ApiEndPoint("/echo", builder.builder());
-        apiManager.insertHandler(echoEndPoint).get();
+                        .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString()))
+                .setResponseLoaderBuilder(() -> (t, r) -> {
+                    r.setStatusCode(HttpStatus.OK);
+                    String res = (String) t;
+                    DataBuffer dataBuffer = r.bufferFactory().allocateBuffer(res.length());
+                    // 获得 OutputStream 的引用
+                    try (OutputStream outputStream = dataBuffer.asOutputStream()) {
+                        outputStream.write(res.getBytes(StandardCharsets.UTF_8));
+                    } catch (IOException ioException) {
+                        throw new RuntimeException(ioException);
+                    }
+                    return r.writeWith(Mono.just(dataBuffer));
+                });
+        return new ApiEndPoint("/echo", builder.builder());
     }
 }
