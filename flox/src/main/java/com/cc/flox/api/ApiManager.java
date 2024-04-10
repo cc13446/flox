@@ -1,7 +1,7 @@
-package com.cc.flox.service;
+package com.cc.flox.api;
 
-import com.cc.flox.web.endpoint.HttpEndPoint;
-import com.cc.flox.web.router.HttpRouter;
+import com.cc.flox.api.endpoint.ApiEndPoint;
+import com.cc.flox.api.router.ApiRouter;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +14,10 @@ import java.util.concurrent.Future;
  * @date 2024/3/31
  */
 @Component
-public class ServiceManager {
+public class ApiManager {
 
     @Resource
-    private HttpRouter httpRouter;
+    private ApiRouter trieApiRouter;
 
     /**
      * 插入服务
@@ -25,8 +25,8 @@ public class ServiceManager {
      * @param endPoint 服务
      * @return future
      */
-    public Future<Void> insertHandler(HttpEndPoint endPoint) {
-        return httpRouter.insertHandler(endPoint);
+    public Future<Void> insertHandler(ApiEndPoint endPoint) {
+        return trieApiRouter.insertHandler(endPoint);
     }
 
     /**
@@ -36,7 +36,7 @@ public class ServiceManager {
      * @return future
      */
     public Future<Void> deleteHandler(String key) {
-        return httpRouter.deleteHandler(key);
+        return trieApiRouter.deleteHandler(key);
     }
 
     /**
@@ -45,7 +45,7 @@ public class ServiceManager {
      * @param endPoint 服务
      * @return future
      */
-    public Future<Void> updateHandler(HttpEndPoint endPoint) {
-        return httpRouter.updateHandler(endPoint);
+    public Future<Void> updateHandler(ApiEndPoint endPoint) {
+        return trieApiRouter.updateHandler(endPoint);
     }
 }

@@ -1,13 +1,13 @@
-package com.cc.flox.web.router.impl;
+package com.cc.flox.api.router.impl;
 
 import com.cc.flox.utils.trie.Trie;
 import com.cc.flox.utils.trie.command.TrieDeleteCommand;
 import com.cc.flox.utils.trie.command.TrieInsertCommand;
 import com.cc.flox.utils.trie.command.TrieUpdateCommand;
-import com.cc.flox.web.endpoint.HttpEndPoint;
-import com.cc.flox.web.endpoint.HttpExchange;
+import com.cc.flox.api.endpoint.ApiEndPoint;
+import com.cc.flox.api.endpoint.ApiExchange;
 import org.springframework.stereotype.Component;
-import com.cc.flox.web.router.HttpRouter;
+import com.cc.flox.api.router.ApiRouter;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -19,13 +19,13 @@ import java.util.concurrent.Future;
  * @author cc
  * @date 2024/3/30
  */
-@Component("trieHttpRouter")
-public class TrieHttpRouter implements HttpRouter {
+@Component("trieApiRouter")
+public class TrieApiRouter implements ApiRouter {
 
     /**
      * 路由前缀树
      */
-    static class HttpEndPointTrie extends Trie<HttpEndPoint> {
+    static class ApiEndPointTrie extends Trie<ApiEndPoint> {
         @Override
         public int getNodeLength() {
             return 55;
@@ -51,12 +51,12 @@ public class TrieHttpRouter implements HttpRouter {
     /**
      * 路由前缀树
      */
-    private final HttpEndPointTrie endPointTrie = new HttpEndPointTrie();
+    private final ApiEndPointTrie endPointTrie = new ApiEndPointTrie();
 
     @Override
-    public Mono<Void> handle(HttpExchange exchange) {
+    public Mono<Void> handle(ApiExchange exchange) {
         String path = exchange.getRequest().getPath().value();
-        HttpEndPoint endPoint = endPointTrie.get(path);
+        ApiEndPoint endPoint = endPointTrie.get(path);
         if (Objects.isNull(endPoint)) {
             return Mono.error(new RuntimeException("Miss router path [" + path + "]"));
         }
@@ -64,7 +64,7 @@ public class TrieHttpRouter implements HttpRouter {
     }
 
     @Override
-    public Future<Void> insertHandler(HttpEndPoint endPoint) {
+    public Future<Void> insertHandler(ApiEndPoint endPoint) {
         return endPointTrie.command(new TrieInsertCommand<>(endPoint.getPath(), endPoint));
     }
 
@@ -74,7 +74,7 @@ public class TrieHttpRouter implements HttpRouter {
     }
 
     @Override
-    public Future<Void> updateHandler(HttpEndPoint endPoint) {
+    public Future<Void> updateHandler(ApiEndPoint endPoint) {
         return endPointTrie.command(new TrieUpdateCommand<>(endPoint.getPath(), e -> endPoint));
     }
 }

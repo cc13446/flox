@@ -1,4 +1,4 @@
-package com.cc.flox.dao;
+package com.cc.flox.dataSource;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,10 +28,10 @@ public enum DataSourceType {
     /**
      * jdbc url 中数据库的 code
      */
-    private final String urlCode;
+    private final String code;
 
-    public static DataSourceType fromUrlCode(String urlCode) {
-        return Arrays.stream(DataSourceType.values()).filter(v -> v.getUrlCode().equals(urlCode)).findFirst().orElse(null);
+    public static DataSourceType fromCode(String code) {
+        return Arrays.stream(DataSourceType.values()).filter(v -> v.getCode().equals(code)).findFirst().orElse(null);
     }
 
 }

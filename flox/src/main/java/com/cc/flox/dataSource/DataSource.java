@@ -1,8 +1,8 @@
-package com.cc.flox.dao;
+package com.cc.flox.dataSource;
 
-import io.r2dbc.pool.ConnectionPool;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 
 /** 数据源
  * @author cc
@@ -20,5 +20,5 @@ public class DataSource {
     /**
      * 数据库连接池
      */
-    private final ConnectionPool connectionPool;
+    private final R2dbcEntityTemplate template;
 }

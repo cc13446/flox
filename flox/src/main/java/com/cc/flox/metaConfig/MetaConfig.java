@@ -1,4 +1,4 @@
-package com.cc.flox.meta.config;
+package com.cc.flox.metaConfig;
 
 import jakarta.annotation.Resource;
 import lombok.Getter;

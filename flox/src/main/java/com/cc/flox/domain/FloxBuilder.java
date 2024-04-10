@@ -1,6 +1,5 @@
-package com.cc.flox.domain.builder;
+package com.cc.flox.domain;
 
-import com.cc.flox.domain.Flox;
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.loader.ResponseLoader;
 import lombok.Data;

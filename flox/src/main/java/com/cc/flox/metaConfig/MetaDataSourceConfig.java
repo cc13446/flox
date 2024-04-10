@@ -1,7 +1,7 @@
-package com.cc.flox.meta.config;
+package com.cc.flox.metaConfig;
 
-import com.cc.flox.dao.DataSourceConfiguration;
-import com.cc.flox.dao.DataSourceType;
+import com.cc.flox.dataSource.DataSourceConfiguration;
+import com.cc.flox.dataSource.DataSourceType;
 import com.cc.flox.utils.AssertUtils;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
@@ -64,16 +64,16 @@ public class MetaDataSourceConfig {
      * @return 元数据库配置对象
      */
     public DataSourceConfiguration getDataSourceConfiguration() {
+        AssertUtils.assertNonBlank(url, "Meta dataSource [url] cannot be null");
+
         ConnectionFactoryOptions options = ConnectionFactoryOptions.parse(url);
         String dataSourceType = (String) checkAndGetValue(options, "driver");
         return new DataSourceConfiguration(
                 DATA_SOURCE_META_KEY,
-                (String) checkAndGetValue(options, "host"),
-                (Integer) checkAndGetValue(options, "port"),
-                (String) checkAndGetValue(options, "database"),
+                url,
                 StringUtils.isNoneBlank(username) ? username : (String) checkAndGetValue(options, "username"),
                 StringUtils.isNoneBlank(password) ? password : (String) checkAndGetValue(options, "password"),
-                AssertUtils.assertNonNull(DataSourceType.fromUrlCode(dataSourceType), "Unknown dataSource type : " + dataSourceType),
+                AssertUtils.assertNonNull(DataSourceType.fromCode(dataSourceType), "Unknown dataSource type : " + dataSourceType),
                 initSize,
                 maxSize,
                 maxIdle

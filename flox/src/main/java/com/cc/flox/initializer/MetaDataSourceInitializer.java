@@ -1,7 +1,7 @@
-package com.cc.flox.meta;
+package com.cc.flox.initializer;
 
-import com.cc.flox.dao.DataSourceManager;
-import com.cc.flox.meta.config.MetaConfig;
+import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.metaConfig.MetaConfig;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;

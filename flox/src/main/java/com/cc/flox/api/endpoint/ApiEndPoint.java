@@ -1,4 +1,4 @@
-package com.cc.flox.web.endpoint;
+package com.cc.flox.api.endpoint;
 
 import com.cc.flox.domain.Flox;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
  */
 @Getter
 @AllArgsConstructor
-public class HttpEndPoint {
+public class ApiEndPoint {
     /**
      * url path
      */
@@ -27,7 +27,7 @@ public class HttpEndPoint {
     /**
      * handler
      */
-    public Mono<Void> handler(HttpExchange exchange) {
+    public Mono<Void> handler(ApiExchange exchange) {
         return flox.getRequestExtractor().extract(exchange.getRequest())
                 .flatMap(o -> flox.getResponseLoader().loader(o, exchange.getResponse()));
     }

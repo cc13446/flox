@@ -1,8 +1,8 @@
-package com.cc.flox.meta;
+package com.cc.flox.initializer;
 
-import com.cc.flox.domain.builder.FloxBuilder;
-import com.cc.flox.service.ServiceManager;
-import com.cc.flox.web.endpoint.HttpEndPoint;
+import com.cc.flox.domain.FloxBuilder;
+import com.cc.flox.api.ApiManager;
+import com.cc.flox.api.endpoint.ApiEndPoint;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class MetaFloxInitializer implements CommandLineRunner {
     @Resource
-    private ServiceManager serviceManager;
+    private ApiManager apiManager;
 
     @Override
     public void run(String... args) throws Exception {
@@ -45,7 +45,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
             }
             return r.writeWith(Mono.just(dataBuffer));
         });
-        HttpEndPoint echoEndPoint = new HttpEndPoint("/echo", builder.builder());
-        serviceManager.insertHandler(echoEndPoint).get();
+        ApiEndPoint echoEndPoint = new ApiEndPoint("/echo", builder.builder());
+        apiManager.insertHandler(echoEndPoint).get();
     }
 }

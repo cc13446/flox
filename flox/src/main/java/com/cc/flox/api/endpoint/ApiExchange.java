@@ -1,4 +1,4 @@
-package com.cc.flox.web.endpoint;
+package com.cc.flox.api.endpoint;
 
 import lombok.Data;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -9,7 +9,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
  * @date 2024/3/30
  */
 @Data
-public class HttpExchange {
+public class ApiExchange {
 
     /**
      * HTTP 请求
