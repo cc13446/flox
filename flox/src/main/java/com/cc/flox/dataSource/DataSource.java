@@ -1,10 +1,15 @@
 package com.cc.flox.dataSource;
 
+import com.cc.flox.dataSource.action.Action;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 
-/** 数据源
+import java.util.Map;
+
+/**
+ * 数据源
+ *
  * @author cc
  * @date 2024/4/6
  */
@@ -21,4 +26,9 @@ public class DataSource {
      * 数据库连接池
      */
     private final R2dbcEntityTemplate template;
+
+    /**
+     * 数据库动作
+     */
+    private final Map<String, Action> action;
 }

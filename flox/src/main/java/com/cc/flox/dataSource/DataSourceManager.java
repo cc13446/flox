@@ -10,6 +10,7 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,7 +37,10 @@ public class DataSourceManager {
     public void insert(DataSourceConfiguration dataSourceConfig) {
         dataSourceMap.compute(dataSourceConfig.id(), (key, oldPool) -> {
             if (Objects.isNull(oldPool)) {
-                return new DataSource(key, new R2dbcEntityTemplate(new ConnectionPool(getConnectionPoolConfiguration(dataSourceConfig))));
+                return new DataSource(
+                        key,
+                        new R2dbcEntityTemplate(new ConnectionPool(getConnectionPoolConfiguration(dataSourceConfig))),
+                        new HashMap<>());
             }
             throw new RuntimeException("Insert dataSource fail : existed");
         });

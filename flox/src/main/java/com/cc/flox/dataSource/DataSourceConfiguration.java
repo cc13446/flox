@@ -1,5 +1,9 @@
 package com.cc.flox.dataSource;
 
+import com.cc.flox.dataSource.action.Action;
+
+import java.util.Map;
+
 /**
  * 数据源配置
  *
@@ -16,7 +20,10 @@ public record DataSourceConfiguration(
         DataSourceType type,
 
         // 连接池配置
-        int initSize, int maxSize, int maxIdle) {
+        int initSize, int maxSize, int maxIdle,
+
+        // 数据库动作
+        Map<String, Action> action) {
 
     /**
      * 用户名
