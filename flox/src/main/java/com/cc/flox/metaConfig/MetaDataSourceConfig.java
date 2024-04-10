@@ -2,6 +2,7 @@ package com.cc.flox.metaConfig;
 
 import com.cc.flox.dataSource.DataSourceConfiguration;
 import com.cc.flox.dataSource.DataSourceType;
+import com.cc.flox.dataSource.action.Action;
 import com.cc.flox.utils.AssertUtils;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
@@ -9,6 +10,9 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 元数据库配置
@@ -76,8 +80,17 @@ public class MetaDataSourceConfig {
                 AssertUtils.assertNonNull(DataSourceType.fromCode(dataSourceType), "Unknown dataSource type : " + dataSourceType),
                 initSize,
                 maxSize,
-                maxIdle
+                maxIdle,
+                getMetaDataSourceAction()
         );
+    }
+
+    /**
+     * @return 元数据库动作
+     */
+    private Map<String, Action> getMetaDataSourceAction() {
+        //todo 从文件中读取动作
+        return HashMap.newHashMap(1);
     }
 
     /**
