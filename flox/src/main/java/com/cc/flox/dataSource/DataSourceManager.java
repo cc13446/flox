@@ -40,7 +40,7 @@ public class DataSourceManager {
                 return new DataSource(
                         key,
                         new R2dbcEntityTemplate(new ConnectionPool(getConnectionPoolConfiguration(dataSourceConfig))),
-                        new HashMap<>());
+                        dataSourceConfig.action());
             }
             throw new RuntimeException("Insert dataSource fail : existed");
         });
