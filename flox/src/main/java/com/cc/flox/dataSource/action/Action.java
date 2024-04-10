@@ -9,9 +9,9 @@ package com.cc.flox.dataSource.action;
 public class Action {
 
     /**
-     * id
+     * code
      */
-    private String id;
+    private String code;
 
     /**
      * 类型

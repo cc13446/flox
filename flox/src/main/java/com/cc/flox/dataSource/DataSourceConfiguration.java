@@ -11,7 +11,7 @@ import java.util.Map;
  * @date 2024/4/6
  */
 public record DataSourceConfiguration(
-        String id,
+        String code,
 
         // 数据库配置
         String url, String username, String password,

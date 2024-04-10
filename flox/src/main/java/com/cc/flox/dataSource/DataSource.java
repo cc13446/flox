@@ -18,9 +18,9 @@ import java.util.Map;
 public class DataSource {
 
     /**
-     * 数据源id
+     * 数据源code
      */
-    private final String Id;
+    private final String code;
 
     /**
      * 数据库连接池

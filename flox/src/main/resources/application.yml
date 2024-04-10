@@ -4,6 +4,6 @@ spring:
 
 meta:
   dataSource:
-    url: r2dbc:mysql://172.23.109.148:3306/mysql
-    username: root
+    url: r2dbc:postgresql://172.23.109.148:5432/flox
+    username: postgres
     password: chenchen

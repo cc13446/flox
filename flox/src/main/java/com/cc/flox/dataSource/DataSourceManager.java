@@ -29,12 +29,20 @@ public class DataSourceManager {
     private final Map<String, DataSource> dataSourceMap = new ConcurrentHashMap<>();
 
     /**
+     * @param code code
+     * @return code 对应的数据源
+     */
+    public DataSource get(String code) {
+        return dataSourceMap.get(code);
+    }
+
+    /**
      * 数据源插入
      *
      * @param dataSourceConfig 数据源配置
      */
     public void insert(DataSourceConfiguration dataSourceConfig) {
-        dataSourceMap.compute(dataSourceConfig.id(), (key, oldPool) -> {
+        dataSourceMap.compute(dataSourceConfig.code(), (key, oldPool) -> {
             if (Objects.isNull(oldPool)) {
                 return new DataSource(
                         key,
