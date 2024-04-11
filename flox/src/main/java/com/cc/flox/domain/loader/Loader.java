@@ -7,6 +7,6 @@ import reactor.core.publisher.Mono;
  * @date 2024/4/4
  */
 @FunctionalInterface
-public interface Loader<Source, Destination> {
-    Mono<Void> loader(Source source, Destination destination);
+public interface Loader<Source, Destination, Result> {
+    Mono<Result> loader(Source source, Destination destination);
 }
