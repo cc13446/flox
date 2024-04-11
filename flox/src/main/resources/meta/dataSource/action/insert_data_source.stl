@@ -1,0 +1,5 @@
+INSERT INTO data_source (code,type,url,username,password)
+VALUES
+<foreach collection="list" item="item" separator=",">
+    (#{item.code}, #{item.type}, #{item.url}, #{item.username}, #{item.password})
+</foreach>

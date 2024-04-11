@@ -3,14 +3,20 @@ package com.cc.flox.metaConfig;
 import com.cc.flox.dataSource.DataSourceConfiguration;
 import com.cc.flox.dataSource.DataSourceType;
 import com.cc.flox.dataSource.action.Action;
+import com.cc.flox.dataSource.action.ActionType;
 import com.cc.flox.utils.AssertUtils;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +32,12 @@ public class MetaDataSourceConfig {
     /**
      * 元数据库 key
      */
-    public static final String DATA_SOURCE_META_KEY = "META_DATA_SOURCE";
+    public static final String META_DATA_SOURCE_KEY = "META_DATA_SOURCE";
+
+    /**
+     * 元数据库动作路径
+     */
+    private static final String META_DATA_SOURCE_ACTION_PATH = "classpath:meta/dataSource/action/";
 
     /**
      * 数据源 url
@@ -64,16 +75,19 @@ public class MetaDataSourceConfig {
     @Value("${meta.dataSource.pool.maxIdle:60}")
     private int maxIdle;
 
+    @Resource
+    private ResourceLoader resourceLoader;
+
     /**
      * @return 元数据库配置对象
      */
-    public DataSourceConfiguration getDataSourceConfiguration() {
+    public DataSourceConfiguration getDataSourceConfiguration() throws IOException {
         AssertUtils.assertNonBlank(url, "Meta dataSource [url] cannot be null");
 
         ConnectionFactoryOptions options = ConnectionFactoryOptions.parse(url);
         String dataSourceType = (String) checkAndGetValue(options, "driver");
         return new DataSourceConfiguration(
-                DATA_SOURCE_META_KEY,
+                META_DATA_SOURCE_KEY,
                 url,
                 StringUtils.isNoneBlank(username) ? username : (String) checkAndGetValue(options, "username"),
                 StringUtils.isNoneBlank(password) ? password : (String) checkAndGetValue(options, "password"),
@@ -88,9 +102,32 @@ public class MetaDataSourceConfig {
     /**
      * @return 元数据库动作
      */
-    private Map<String, Action> getMetaDataSourceAction() {
-        //todo 从文件中读取动作
-        return HashMap.newHashMap(1);
+    private Map<String, Action> getMetaDataSourceAction() throws IOException {
+        File folder = resourceLoader.getResource(META_DATA_SOURCE_ACTION_PATH).getFile();
+        if (!folder.isDirectory()) {
+            throw new RuntimeException(META_DATA_SOURCE_ACTION_PATH + " must be directory!");
+        }
+        File[] actionFiles = folder.listFiles();
+        AssertUtils.assertNonNull(actionFiles, "Meta data source actions must not be null");
+        Map<String, Action> res = HashMap.newHashMap(actionFiles.length);
+        for (File file : actionFiles) {
+            if (file.isDirectory() || file.getName().startsWith(".")) {
+                continue;
+            }
+            String fileName = file.getName();
+            String[] nameSplit = fileName.split("\\.");
+            if (nameSplit.length != 2) {
+                throw new RuntimeException("Meta data source action file name invalid:" + fileName);
+            }
+            String actionCode = nameSplit[0];
+            ActionType actionType = ActionType.fromCode(nameSplit[1]);
+            AssertUtils.assertNonNull(actionType, "Unknown action type:" + nameSplit[1]);
+            String actionSql = Files.readString(file.toPath());
+            res.put(actionCode, new Action(actionCode, actionType,
+                    AssertUtils.assertNonBlank(actionSql, "Meta data source action sql cannot be blank")));
+        }
+
+        return res;
     }
 
     /**

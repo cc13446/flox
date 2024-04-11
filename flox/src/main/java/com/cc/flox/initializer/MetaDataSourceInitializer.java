@@ -53,7 +53,7 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
         dataSourceManager.insert(metaConfig.getMetaDataSourceConfig().getDataSourceConfiguration());
 
         // 自动建立数据表
-        DataSource ds = AssertUtils.assertNonNull(dataSourceManager.get(MetaDataSourceConfig.DATA_SOURCE_META_KEY), "Meta dataSource cannot be null");
+        DataSource ds = AssertUtils.assertNonNull(dataSourceManager.get(MetaDataSourceConfig.META_DATA_SOURCE_KEY), "Meta dataSource cannot be null");
         List<String> existedTableList = getExistedTableName(ds.getTemplate().getDatabaseClient());
         List<String> notExistedTableList = META_DATA_SOURCE_TABLE_LIST.stream()
                 .filter(table -> !existedTableList.contains(table))
