@@ -2,6 +2,7 @@ package com.cc.flox.initializer;
 
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.api.endpoint.ApiEndPoint;
+import com.cc.flox.api.endpoint.ApiMethod;
 import com.cc.flox.domain.FloxBuilder;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
@@ -34,8 +35,6 @@ public class MetaFloxInitializer implements CommandLineRunner {
     }
 
     /**
-     * 获取 echo end point
-     *
      * @return echo end point
      */
     private ApiEndPoint getEchoEndPoint() {
@@ -55,6 +54,13 @@ public class MetaFloxInitializer implements CommandLineRunner {
                     }
                     return r.writeWith(Mono.just(dataBuffer));
                 });
-        return new ApiEndPoint("/echo", builder.builder());
+        return new ApiEndPoint("/echo", ApiMethod.GET, builder.builder());
+    }
+
+    /**
+     * @return insert data source end point
+     */
+    private ApiEndPoint getInsertDataSourceEndPoint() {
+        return null;
     }
 }

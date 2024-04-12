@@ -1,4 +1,4 @@
-package com.cc.flox.dataSource.action;
+package com.cc.flox.dataSource.template;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.Arrays;
  */
 @AllArgsConstructor
 @Getter
-public enum ActionType {
+public enum TemplateType {
 
     /**
      * 原生sql
@@ -23,7 +23,7 @@ public enum ActionType {
     /**
      * string template 模板
      */
-    StringTemplate("stl");
+    StringTemplate("stg");
 
     private final String code;
 
@@ -31,7 +31,7 @@ public enum ActionType {
      * @param code code
      * @return type
      */
-    public static ActionType fromCode(String code) {
-        return Arrays.stream(ActionType.values()).filter(t -> t.getCode().equals(code)).findFirst().orElse(null);
+    public static TemplateType fromCode(String code) {
+        return Arrays.stream(TemplateType.values()).filter(t -> t.getCode().equals(code)).findFirst().orElse(null);
     }
 }

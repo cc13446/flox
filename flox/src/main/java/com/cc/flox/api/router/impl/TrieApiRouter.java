@@ -65,7 +65,7 @@ public class TrieApiRouter implements ApiRouter {
 
     @Override
     public Future<Void> insertHandler(ApiEndPoint endPoint) {
-        return endPointTrie.command(new TrieInsertCommand<>(endPoint.getPath(), endPoint));
+        return endPointTrie.command(new TrieInsertCommand<>(endPoint.path(), endPoint));
     }
 
     @Override
@@ -75,6 +75,6 @@ public class TrieApiRouter implements ApiRouter {
 
     @Override
     public Future<Void> updateHandler(ApiEndPoint endPoint) {
-        return endPointTrie.command(new TrieUpdateCommand<>(endPoint.getPath(), e -> endPoint));
+        return endPointTrie.command(new TrieUpdateCommand<>(endPoint.path(), e -> endPoint));
     }
 }

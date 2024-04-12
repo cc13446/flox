@@ -3,7 +3,7 @@ package com.cc.flox.metaConfig;
 import com.cc.flox.dataSource.DataSourceConfiguration;
 import com.cc.flox.dataSource.DataSourceType;
 import com.cc.flox.dataSource.action.Action;
-import com.cc.flox.dataSource.action.ActionType;
+import com.cc.flox.dataSource.template.TemplateType;
 import com.cc.flox.utils.AssertUtils;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
@@ -120,10 +120,10 @@ public class MetaDataSourceConfig {
                 throw new RuntimeException("Meta data source action file name invalid:" + fileName);
             }
             String actionCode = nameSplit[0];
-            ActionType actionType = ActionType.fromCode(nameSplit[1]);
-            AssertUtils.assertNonNull(actionType, "Unknown action type:" + nameSplit[1]);
+            TemplateType templateType = TemplateType.fromCode(nameSplit[1]);
+            AssertUtils.assertNonNull(templateType, "Unknown action type:" + nameSplit[1]);
             String actionSql = Files.readString(file.toPath());
-            res.put(actionCode, new Action(actionCode, actionType,
+            res.put(actionCode, new Action(actionCode, templateType,
                     AssertUtils.assertNonBlank(actionSql, "Meta data source action sql cannot be blank")));
         }
 

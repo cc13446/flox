@@ -1,5 +1,6 @@
 package com.cc.flox.dataSource.action;
 
+import com.cc.flox.dataSource.template.TemplateType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,9 +20,9 @@ public class Action {
     private String code;
 
     /**
-     * 类型
+     * 模板类型
      */
-    private ActionType type;
+    private TemplateType templateType;
 
     /**
      * sql
