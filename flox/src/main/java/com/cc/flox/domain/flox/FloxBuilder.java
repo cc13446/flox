@@ -1,4 +1,4 @@
-package com.cc.flox.domain;
+package com.cc.flox.domain.flox;
 
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.loader.ResponseLoader;

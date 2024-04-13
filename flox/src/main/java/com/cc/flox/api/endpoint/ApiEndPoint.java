@@ -1,6 +1,6 @@
 package com.cc.flox.api.endpoint;
 
-import com.cc.flox.domain.Flox;
+import com.cc.flox.domain.flox.Flox;
 import reactor.core.publisher.Mono;
 
 /**
