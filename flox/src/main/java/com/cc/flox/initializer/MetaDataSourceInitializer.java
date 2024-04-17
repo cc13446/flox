@@ -2,8 +2,8 @@ package com.cc.flox.initializer;
 
 import com.cc.flox.dataSource.DataSource;
 import com.cc.flox.dataSource.DataSourceManager;
-import com.cc.flox.metaConfig.MetaConfig;
-import com.cc.flox.metaConfig.MetaDataSourceConfig;
+import com.cc.flox.meta.config.MetaConfig;
+import com.cc.flox.meta.config.MetaDataSourceConfig;
 import com.cc.flox.utils.AssertUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

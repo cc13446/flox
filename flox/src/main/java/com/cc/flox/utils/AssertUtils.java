@@ -15,10 +15,11 @@ public class AssertUtils {
 
     /**
      * 断言 object 不为 null
-     * @param object object
+     *
+     * @param object     object
      * @param errMessage 错误信息
+     * @param <T>        T
      * @return object
-     * @param <T> T
      */
     public static <T> @NonNull T assertNonNull(T object, String errMessage) {
         if (Objects.isNull(object)) {
@@ -29,7 +30,8 @@ public class AssertUtils {
 
     /**
      * 断言字符串不为blank
-     * @param object 字符串
+     *
+     * @param object     字符串
      * @param errMessage 错误信息
      * @return 字符串
      */
@@ -38,5 +40,17 @@ public class AssertUtils {
             throw new RuntimeException(errMessage);
         }
         return object;
+    }
+
+    /**
+     * 断言boolean 为 true
+     *
+     * @param object     boolean
+     * @param errMessage 错误信息
+     */
+    public static void assertTrue(boolean object, String errMessage) {
+        if (!object) {
+            throw new RuntimeException(errMessage);
+        }
     }
 }

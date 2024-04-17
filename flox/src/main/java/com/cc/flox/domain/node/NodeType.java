@@ -1,4 +1,4 @@
-package com.cc.flox.domain.flox.node;
+package com.cc.flox.domain.node;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,9 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum FloxNodeType {
+public enum NodeType {
+
+    SUB_FLOX("subFlox"),
 
     EXTRACT("extract"),
 

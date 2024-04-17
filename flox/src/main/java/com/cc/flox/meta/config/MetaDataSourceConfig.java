@@ -1,4 +1,4 @@
-package com.cc.flox.metaConfig;
+package com.cc.flox.meta.config;
 
 import com.cc.flox.dataSource.DataSourceConfiguration;
 import com.cc.flox.dataSource.DataSourceType;
