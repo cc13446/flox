@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 @FunctionalInterface
 public interface Transformer<Source, Result> extends Node {
 
-    Mono<Result> transform(Source source);
+    Mono<Result> transform(Mono<Source> source);
 
     @Override
     default NodeType getType() {

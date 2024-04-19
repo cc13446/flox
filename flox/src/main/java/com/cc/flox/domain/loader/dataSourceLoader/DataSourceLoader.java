@@ -14,7 +14,7 @@ import java.util.Map;
 public class DataSourceLoader implements Loader<DataSourceLoaderParam, DataSourceManager, List<Map<String, Object>>> {
 
     @Override
-    public Mono<List<Map<String, Object>>> loader(DataSourceLoaderParam param, DataSourceManager dataSourceManager) {
-        return dataSourceManager.exec(param.dataSourceCode(), param.actionCode(), param.param());
+    public Mono<List<Map<String, Object>>> loader(Mono<DataSourceLoaderParam> param, Mono<DataSourceManager> dataSourceManager) {
+        return Mono.zip(param, dataSourceManager).flatMap(t -> t.getT2().exec(t.getT1().dataSourceCode(), t.getT1().actionCode(), t.getT1().param()));
     }
 }

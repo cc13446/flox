@@ -11,6 +11,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,21 +40,24 @@ public class MetaFloxInitializer implements CommandLineRunner {
      */
     private ApiEndPoint getEchoEndPoint() {
         FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> r -> Mono.just(r.getQueryParams().entrySet().stream()
+                .setRequestExtractorBuilder(() -> m -> m.map(r -> r.getQueryParams().entrySet().stream()
                         .map(e -> e.getKey() + "=[" + e.getValue().stream().reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString() + "]\n")
                         .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append).toString()))
-                .setResponseLoaderBuilder(() -> (t, r) -> {
-                    r.setStatusCode(HttpStatus.OK);
-                    String res = (String) t;
-                    DataBuffer dataBuffer = r.bufferFactory().allocateBuffer(res.length());
-                    // 获得 OutputStream 的引用
-                    try (OutputStream outputStream = dataBuffer.asOutputStream()) {
-                        outputStream.write(res.getBytes(StandardCharsets.UTF_8));
-                    } catch (IOException ioException) {
-                        throw new RuntimeException(ioException);
-                    }
-                    return r.writeWith(Mono.just(dataBuffer));
-                });
+                .setResponseLoaderBuilder(() -> (o, r) ->
+                        Mono.zip(o, r).publishOn(Schedulers.boundedElastic()).handle((t, sink) -> {
+                            t.getT2().setStatusCode(HttpStatus.OK);
+                            String res = (String) t.getT1();
+                            DataBuffer dataBuffer = t.getT2().bufferFactory().allocateBuffer(res.length());
+                            // 获得 OutputStream 的引用
+                            try (OutputStream outputStream = dataBuffer.asOutputStream()) {
+                                outputStream.write(res.getBytes(StandardCharsets.UTF_8));
+                            } catch (IOException ioException) {
+                                sink.error(new RuntimeException(ioException));
+                                return;
+                            }
+                            t.getT2().writeWith(Mono.just(dataBuffer)).block();
+                            sink.complete();
+                        }));
         return new ApiEndPoint("/echo", ApiMethod.GET, builder.builder());
     }
 

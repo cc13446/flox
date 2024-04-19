@@ -11,10 +11,10 @@ import reactor.core.publisher.Mono;
 @FunctionalInterface
 public interface Extractor<Source, Result> extends Node {
 
-    Mono<Result> extract(Source source);
+    Mono<Result> extract(Mono<Source> source);
 
     @Override
     default NodeType getType() {
-        return NodeType.EXTRACT;
+        return NodeType.EXTRACTOR;
     }
 }

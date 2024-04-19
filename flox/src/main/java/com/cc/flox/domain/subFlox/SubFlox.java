@@ -14,10 +14,10 @@ import reactor.core.publisher.Mono;
 public interface SubFlox extends Node {
 
     /**
-     * @param object 参数
+     * @param param 参数
      * @return 结果
      */
-    Mono<Object> handle(Object object);
+    Mono<Object> handle(Mono<Object> param);
 
     @Override
     default NodeType getType() {

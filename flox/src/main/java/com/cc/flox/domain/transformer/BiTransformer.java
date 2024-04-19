@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 @FunctionalInterface
 public interface BiTransformer<Source1, Source2, Result> extends Node {
 
-    Mono<Result> transform(Source1 source1, Source2 source2);
+    Mono<Result> transform(Mono<Source1> source1, Mono<Source2> source2);
 
     @Override
     default NodeType getType() {

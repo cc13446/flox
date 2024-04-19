@@ -18,7 +18,6 @@ public record ApiEndPoint(String path, ApiMethod method, Flox flox) {
      * handler
      */
     public Mono<Void> handler(ApiExchange exchange) {
-        return flox.getRequestExtractor().extract(exchange.getRequest())
-                .flatMap(o -> flox.getResponseLoader().loader(o, exchange.getResponse()));
+        return flox.handler(exchange);
     }
 }

@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
  */
 @FunctionalInterface
 public interface Loader<Source, Destination, Result> extends Node {
-    Mono<Result> loader(Source source, Destination destination);
+    Mono<Result> loader(Mono<Source> source, Mono<Destination> destination);
 
     @Override
     default NodeType getType() {
