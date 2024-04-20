@@ -3,6 +3,7 @@ package com.cc.flox.domain.flox;
 import com.cc.flox.api.endpoint.ApiExchange;
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.loader.ResponseLoader;
+import com.cc.flox.domain.subFlox.SubFlox;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
@@ -23,6 +24,11 @@ public class Flox {
     private RequestExtractor<Object> requestExtractor;
 
     /**
+     * sub flox
+     */
+    private SubFlox subFlox;
+
+    /**
      * HTTP响应加载器
      */
     private ResponseLoader<Object> responseLoader;
@@ -31,8 +37,9 @@ public class Flox {
      * handler
      */
     public Mono<Void> handler(ApiExchange exchange) {
-        return requestExtractor.extract(Mono.just(exchange.getRequest()))
-                .flatMap(o -> responseLoader.loader(Mono.just(o), Mono.just(exchange.getResponse())));
+        Mono<Object> res = requestExtractor.extract(Mono.just(exchange.getRequest()));
+        res = subFlox.handle(res);
+        return responseLoader.loader(res, Mono.just(exchange.getResponse()));
     }
 
 }

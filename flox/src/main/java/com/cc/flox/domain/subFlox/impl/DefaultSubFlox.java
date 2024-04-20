@@ -24,7 +24,7 @@ public class DefaultSubFlox implements SubFlox {
     /**
      * 代表参数的node code
      */
-    private static final String PARAM_NODE_CODE = "PARAM";
+    public static final String PARAM_NODE_CODE = "PARAM";
 
     /**
      * 参数类型
@@ -100,8 +100,9 @@ public class DefaultSubFlox implements SubFlox {
                 continue;
             }
 
-            List<String> preNodes = preNodeMap.getOrDefault(execStack.peek(), Collections.emptyList());
+            Set<String> preNodes = new HashSet<>(preNodeMap.getOrDefault(execStack.peek(), Collections.emptyList()));
             preNodes.removeAll(execResultMap.keySet());
+            preNodes.remove(PARAM_NODE_CODE);
             if (CollectionUtils.isEmpty(preNodes)) {
                 NodeEntity nodeEntity = AssertUtils.assertNonNull(nodeMap.get(execStack.peek()), "Node [" + execStack.peek() + "] cannot be null");
                 Node node = nodeEntity.node();

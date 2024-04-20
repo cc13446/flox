@@ -3,7 +3,12 @@ package com.cc.flox.initializer;
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.api.endpoint.ApiEndPoint;
 import com.cc.flox.api.endpoint.ApiMethod;
+import com.cc.flox.dataSource.DataSourceManager;
 import com.cc.flox.domain.flox.FloxBuilder;
+import com.cc.flox.domain.node.NodeType;
+import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
+import com.cc.flox.domain.transformer.Transformer;
+import com.cc.flox.meta.entity.NodeEntity;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -16,6 +21,8 @@ import reactor.core.scheduler.Schedulers;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -29,6 +36,9 @@ import java.nio.charset.StandardCharsets;
 public class MetaFloxInitializer implements CommandLineRunner {
     @Resource
     private ApiManager apiManager;
+
+    @Resource
+    private DataSourceManager dataSourceManager;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,7 +58,6 @@ public class MetaFloxInitializer implements CommandLineRunner {
                             t.getT2().setStatusCode(HttpStatus.OK);
                             String res = (String) t.getT1();
                             DataBuffer dataBuffer = t.getT2().bufferFactory().allocateBuffer(res.length());
-                            // 获得 OutputStream 的引用
                             try (OutputStream outputStream = dataBuffer.asOutputStream()) {
                                 outputStream.write(res.getBytes(StandardCharsets.UTF_8));
                             } catch (IOException ioException) {
@@ -57,7 +66,22 @@ public class MetaFloxInitializer implements CommandLineRunner {
                             }
                             t.getT2().writeWith(Mono.just(dataBuffer)).block();
                             sink.complete();
-                        }));
+                        }))
+                .setSubFloxBuilder(() -> new DefaultSubFlox(
+                        String.class,
+                        String.class,
+                        List.of(new NodeEntity(
+                                "identify",
+                                NodeType.TRANSFORMER,
+                                (Transformer<String, String>) source -> source,
+                                HashMap.newHashMap(1),
+                                List.of(String.class),
+                                String.class,
+                                "echo",
+                                List.of(DefaultSubFlox.PARAM_NODE_CODE)
+                        )),
+                        dataSourceManager
+                ));
         return new ApiEndPoint("/echo", ApiMethod.GET, builder.builder());
     }
 

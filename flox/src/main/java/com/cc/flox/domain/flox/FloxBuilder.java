@@ -2,6 +2,7 @@ package com.cc.flox.domain.flox;
 
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.loader.ResponseLoader;
+import com.cc.flox.domain.subFlox.SubFlox;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -23,6 +24,11 @@ public class FloxBuilder {
     private Supplier<RequestExtractor<Object>> requestExtractorBuilder;
 
     /**
+     * sub flox 构建者
+     */
+    private Supplier<SubFlox> subFloxBuilder;
+
+    /**
      * HTTP响应加载器构建者
      */
     private Supplier<ResponseLoader<Object>> responseLoaderBuilder;
@@ -33,6 +39,6 @@ public class FloxBuilder {
      * @return flox
      */
     public Flox builder() {
-        return new Flox(requestExtractorBuilder.get(), responseLoaderBuilder.get());
+        return new Flox(requestExtractorBuilder.get(), subFloxBuilder.get(), responseLoaderBuilder.get());
     }
 }
