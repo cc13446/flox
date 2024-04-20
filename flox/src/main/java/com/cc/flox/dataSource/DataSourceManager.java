@@ -86,7 +86,7 @@ public class DataSourceManager {
 
         DatabaseClient.GenericExecuteSpec spec = dataSource.getTemplate().getDatabaseClient().sql(context.getRenderedSQL());
         if (!CollectionUtils.isEmpty(context.getRenderedParam())) {
-            spec.bindValues(context.getRenderedParam());
+            spec = spec.bindValues(context.getRenderedParam());
         }
         return spec.fetch().all().collectList();
     }

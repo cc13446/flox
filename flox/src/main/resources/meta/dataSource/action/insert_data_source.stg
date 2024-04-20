@@ -1,7 +1,0 @@
-insertDataSource(list) ::= <%
-INSERT INTO data_source (code,type,url,username,password)
-VALUES
-<list:{item|
-    (<item.code>, <item.type>, <item.url>, <item.username>, <item.password>)<if(rest(list))>,<endif>
-}>
-%>

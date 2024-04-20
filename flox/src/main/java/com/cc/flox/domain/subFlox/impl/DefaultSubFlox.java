@@ -98,7 +98,6 @@ public class DefaultSubFlox implements SubFlox {
      * @param postNodeMap post node map
      * @return 执行结果
      */
-    @SuppressWarnings("unchecked")
     private Mono<Object> execNodes(Mono<Object> param, Map<String, List<String>> preNodeMap, Map<String, List<String>> postNodeMap) {
         Map<String, Mono<Object>> execResultMap = HashMap.newHashMap(nodeMap.size());
         Stack<String> execStack = new Stack<>();
@@ -131,7 +130,7 @@ public class DefaultSubFlox implements SubFlox {
                             p.add(getExecResult(nodeEntity.preNodeCodes().getFirst(), execResultMap, param).map(m -> new DataSourceLoaderParam(
                                     nodeEntity.attribute().get(DATA_SOURCE_CODE).toString(),
                                     nodeEntity.attribute().get(ACTION_CODE).toString(),
-                                    (Map<String, Object>) m)));
+                                    Map.of("param", m))));
                             p.add(Mono.just(dataSourceManager));
                             result = nodeEntity.nodeType().getExecFunction().exec(node, p);
                         } catch (ClassCastException e) {

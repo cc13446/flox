@@ -94,7 +94,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                                 NodeType.DATA_SOURCE_LOADER,
                                 new DataSourceLoader(),
                                 Map.of(DefaultSubFlox.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY,
-                                        DefaultSubFlox.ACTION_CODE, "insert_data_source"),
+                                        DefaultSubFlox.ACTION_CODE, "insertDataSource"),
                                 List.of(List.class),
                                 List.class,
                                 "insertDataSource",

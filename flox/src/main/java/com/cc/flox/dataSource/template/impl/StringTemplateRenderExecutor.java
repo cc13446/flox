@@ -10,6 +10,8 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupString;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * String Template SQL 渲染执行器
@@ -20,35 +22,15 @@ import java.util.*;
 @Component
 public class StringTemplateRenderExecutor implements TemplateRenderExecutor {
 
-    /**
-     * string template 渲染 sql 时需要的上下文
-     */
-    static final class StringTemplateRenderContext {
-        /**
-         * 参数下标
-         */
-        int paramIndex = 1;
-
-        Map<String, Object> paramMap = new HashMap<>();
-
-    }
-
-    /**
-     * SQL 渲染时的上下文
-     */
-    private final ThreadLocal<StringTemplateRenderContext> CONTEXT = new ThreadLocal<>();
-
     @Override
     public TemplateRenderContext invoke(TemplateRenderContext context) {
-        CONTEXT.set(new StringTemplateRenderContext());
         STGroup group = getSTGroup(context);
         ST st = group.getInstanceOf(context.getAction().getCode());
         for (Map.Entry<String, Object> entry : context.getParam().entrySet()) {
             st.add(entry.getKey(), entry.getValue());
         }
-        context.setRenderedParam(Map.copyOf(CONTEXT.get().paramMap));
         context.setRenderedSQL(st.render());
-        return null;
+        return context;
     }
 
     /**
@@ -57,13 +39,16 @@ public class StringTemplateRenderExecutor implements TemplateRenderExecutor {
      */
     private STGroup getSTGroup(TemplateRenderContext context) {
         STGroup sql = new STGroupString(context.getAction().getSql());
-
+        AtomicInteger index = new AtomicInteger(1);
+        context.setRenderedParam(new ConcurrentHashMap<>());
         // 自定义属性渲染器
-        AttributeRenderer attributeRenderer = (o, s, locale) -> {
-            StringTemplateRenderContext stringTemplateRenderContext = CONTEXT.get();
-            String key = "$" + stringTemplateRenderContext.paramIndex;
-            stringTemplateRenderContext.paramMap.put(key, o);
-            return key;
+        AttributeRenderer attributeRenderer = (o, format, locale) -> {
+            if ("p".equals(format)) {
+                String key = "$" + index.getAndIncrement();
+                context.getRenderedParam().put(key, o);
+                return key;
+            }
+            return o.toString();
         };
         sql.registerRenderer(String.class, attributeRenderer);
         sql.registerRenderer(Number.class, attributeRenderer);
