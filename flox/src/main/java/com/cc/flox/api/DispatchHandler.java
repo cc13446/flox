@@ -1,6 +1,7 @@
 package com.cc.flox.api;
 
 import com.cc.flox.api.endpoint.ApiExchange;
+import com.cc.flox.api.error.ApiErrorHandler;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -23,12 +24,15 @@ public class DispatchHandler implements HttpHandler {
     @Resource
     private ApiManager apiManager;
 
+    @Resource
+    private ApiErrorHandler apiErrorHandler;
+
     @Override
     public @NonNull Mono<Void> handle(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
         log.info("Recv http request path [{}] method [{}]", request.getPath().value(), request.getMethod());
         ApiExchange exchange = new ApiExchange();
         exchange.setRequest(request);
         exchange.setResponse(response);
-        return apiManager.handle(exchange);
+        return apiManager.handle(exchange).onErrorResume((ex) -> apiErrorHandler.handle(exchange, ex));
     }
 }
