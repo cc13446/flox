@@ -27,6 +27,16 @@ public class DefaultSubFlox implements SubFlox {
     public static final String PARAM_NODE_CODE = "PARAM";
 
     /**
+     * dataSourceCode
+     */
+    public static final String DATA_SOURCE_CODE = "dataSourceCode";
+
+    /**
+     * actionCode
+     */
+    public static final String ACTION_CODE = "actionCode";
+
+    /**
      * 参数类型
      */
     private final Class<?> sourceClass;
@@ -119,8 +129,8 @@ public class DefaultSubFlox implements SubFlox {
                         try {
                             List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
                             p.add(getExecResult(nodeEntity.preNodeCodes().getFirst(), execResultMap, param).map(m -> new DataSourceLoaderParam(
-                                    nodeEntity.attribute().get("dataSourceCode").toString(),
-                                    nodeEntity.attribute().get("actionCode").toString(),
+                                    nodeEntity.attribute().get(DATA_SOURCE_CODE).toString(),
+                                    nodeEntity.attribute().get(ACTION_CODE).toString(),
                                     (Map<String, Object>) m)));
                             p.add(Mono.just(dataSourceManager));
                             result = nodeEntity.nodeType().getExecFunction().exec(node, p);
