@@ -32,7 +32,7 @@ const items: MenuProps['items'] = [
 
     { type: 'divider' },
 
-    getItem(<p className='select-none'>数据流</p>, 'flox', <SlidersOutlined />, [
+    getItem(<p className='select-none'>数据流</p>, 'flow', <SlidersOutlined />, [
         getItem(<p className='select-none'>数据类型定义</p>, 'dataType', <DeploymentUnitOutlined />),
         getItem(<p className='select-none'>节点定义</p>, 'node', <SwapOutlined />),
         getItem(<p className='select-none'>子流程配置</p>, 'subFlox', <ForkOutlined />),
