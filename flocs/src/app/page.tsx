@@ -1,6 +1,10 @@
 
-export default function home() {
+import Nav from './components/nav'
+
+const home = () => {
     return (
-        <h1>Welcome!</h1>
-    )
-}
+        <Nav />
+    );
+  };
+  
+  export default home;
