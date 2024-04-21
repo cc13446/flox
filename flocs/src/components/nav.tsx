@@ -25,18 +25,18 @@ function getItem(
 }
 
 const items: MenuProps['items'] = [
-    getItem('数据源', 'dataSource', <DatabaseOutlined />, [
-        getItem('连接配置', 'connect', <ApiOutlined />),
-        getItem('动作配置', 'action', <ControlOutlined />)
+    getItem(<p className='select-none'>数据源</p>, 'dataSource', <DatabaseOutlined />, [
+        getItem(<p className='select-none'>连接配置</p>, 'connect', <ApiOutlined />),
+        getItem(<p className='select-none'>动作配置</p>, 'action', <ControlOutlined />)
     ]),
 
     { type: 'divider' },
 
-    getItem('数据流', 'flox', <SlidersOutlined />, [
-        getItem('数据类型定义', 'dataType', <DeploymentUnitOutlined />),
-        getItem('节点定义', 'node', <SwapOutlined />),
-        getItem('子流程配置', 'subFlox', <ForkOutlined />),
-        getItem('流程配置', 'flox', <ApartmentOutlined />),
+    getItem(<p className='select-none'>数据流</p>, 'flox', <SlidersOutlined />, [
+        getItem(<p className='select-none'>数据类型定义</p>, 'dataType', <DeploymentUnitOutlined />),
+        getItem(<p className='select-none'>节点定义</p>, 'node', <SwapOutlined />),
+        getItem(<p className='select-none'>子流程配置</p>, 'subFlox', <ForkOutlined />),
+        getItem(<p className='select-none'>流程配置</p>, 'flox', <ApartmentOutlined />),
     ]),
 
     { type: 'divider' },
@@ -46,7 +46,7 @@ const items: MenuProps['items'] = [
 const App: React.FC = () => {
     return (
         <Menu
-            style={{ width: 256 }}
+            style={{ width: 256, height: '100%' }}
             mode="inline"
             items={items}
         />

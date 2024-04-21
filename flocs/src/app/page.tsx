@@ -1,10 +1,14 @@
 
-import Nav from './components/nav'
+import Nav from '../components/nav'
+import Head from '../components/head'
 
 const home = () => {
     return (
-        <Nav />
+        <div className='h-dvh flex flex-col'>
+            <Head />
+            <Nav />
+        </div>
     );
-  };
-  
-  export default home;
+};
+
+export default home;
