@@ -13,7 +13,7 @@ import java.util.Map;
  * @date 2024/4/17
  */
 public record NodeEntity(
-        // node
+
         String nodeCode,
 
         NodeType nodeType,
@@ -26,8 +26,5 @@ public record NodeEntity(
 
         Class<?> resultClass,
 
-        // node relation
-        String subFloxCode,
-
-        List<String> preNodeCodes) {
+        Map<String, List<String>> subFloxPreNodeCodeMap) {
 }

@@ -53,9 +53,11 @@ public class MetaFloxInitializer implements CommandLineRunner {
      * @return echo end point
      */
     private ApiEndPoint getEchoEndPoint() {
+        String subFloxCode = "echo";
         FloxBuilder builder = new FloxBuilder()
                 .setRequestExtractorBuilder(() -> m -> m.map(ServerHttpRequest::getQueryParams))
                 .setSubFloxBuilder(() -> new DefaultSubFlox(
+                        subFloxCode,
                         Map.class,
                         Map.class,
                         List.of(new NodeEntity(
@@ -65,8 +67,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                                 HashMap.newHashMap(1),
                                 List.of(Map.class),
                                 Map.class,
-                                "echo",
-                                List.of(DefaultSubFlox.PARAM_NODE_CODE)
+                                Map.of(subFloxCode, List.of(DefaultSubFlox.PARAM_NODE_CODE))
                         )),
                         dataSourceManager
                 ))
@@ -78,6 +79,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
      * @return insert data source end point
      */
     private ApiEndPoint getInsertDataSourceEndPoint() {
+        String subFloxCode = "insertDataSource";
         FloxBuilder builder = new FloxBuilder()
                 .setRequestExtractorBuilder(() -> m -> m.flatMap(r -> DataBufferUtils.join(r.getBody())).flatMap(dataBuffer -> {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
@@ -87,18 +89,17 @@ public class MetaFloxInitializer implements CommandLineRunner {
                     }));
                 }))
                 .setSubFloxBuilder(() -> new DefaultSubFlox(
+                        subFloxCode,
                         List.class,
                         List.class,
                         List.of(new NodeEntity(
                                 "insertDataSource",
                                 NodeType.DATA_SOURCE_LOADER,
                                 new DataSourceLoader(),
-                                Map.of(DefaultSubFlox.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY,
-                                        DefaultSubFlox.ACTION_CODE, "insertDataSource"),
+                                Map.of(DefaultSubFlox.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DefaultSubFlox.ACTION_CODE, "insertDataSource"),
                                 List.of(List.class),
                                 List.class,
-                                "insertDataSource",
-                                List.of(DefaultSubFlox.PARAM_NODE_CODE)
+                                Map.of(subFloxCode, List.of(DefaultSubFlox.PARAM_NODE_CODE))
                         )),
                         dataSourceManager
                 ))

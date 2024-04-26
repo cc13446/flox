@@ -37,6 +37,11 @@ public class DefaultSubFlox implements SubFlox {
     public static final String ACTION_CODE = "actionCode";
 
     /**
+     * code
+     */
+    private final String code;
+
+    /**
      * 参数类型
      */
     private final Class<?> sourceClass;
@@ -56,11 +61,13 @@ public class DefaultSubFlox implements SubFlox {
      */
     private final DataSourceManager dataSourceManager;
 
-    public DefaultSubFlox(Class<?> sourceClass, Class<?> resultClass, List<NodeEntity> nodeEntities, DataSourceManager manager) {
+    public DefaultSubFlox(String code, Class<?> sourceClass, Class<?> resultClass, List<NodeEntity> nodeEntities, DataSourceManager manager) {
+        this.code = code;
         this.sourceClass = sourceClass;
         this.resultClass = resultClass;
         this.nodeMap = nodeEntities.stream().collect(Collectors.toMap(NodeEntity::nodeCode, n -> n));
         this.dataSourceManager = manager;
+        AssertUtils.assertTrue(nodeEntities.stream().allMatch(e -> e.subFloxPreNodeCodeMap().containsKey(code)), "Node must have preNode in the subflox");
     }
 
     @Override
@@ -69,7 +76,7 @@ public class DefaultSubFlox implements SubFlox {
                 "SubFlox must handle [" + sourceClass.getCanonicalName() + "] but handle [" + o.getClass().getCanonicalName() + "]"));
         AssertUtils.assertTrue(!CollectionUtils.isEmpty(nodeMap), "SubFlox must have nodes");
 
-        Map<String, List<String>> preNodeMap = nodeMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().preNodeCodes()));
+        Map<String, List<String>> preNodeMap = nodeMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().subFloxPreNodeCodeMap().get(code)));
         Map<String, List<String>> postNodeMap = getPostNodeMap(preNodeMap);
 
         checkNodeMap(preNodeMap, postNodeMap);
@@ -119,7 +126,7 @@ public class DefaultSubFlox implements SubFlox {
                 switch (nodeEntity.nodeType()) {
                     case SUB_FLOX, EXTRACTOR, LOADER, TRANSFORMER, BI_TRANSFORMER, TRI_TRANSFORMER -> {
                         List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
-                        for (String preNode : nodeEntity.preNodeCodes()) {
+                        for (String preNode : nodeEntity.subFloxPreNodeCodeMap().get(code)) {
                             p.add(getExecResult(preNode, execResultMap, param));
                         }
                         result = nodeEntity.nodeType().getExecFunction().exec(node, p);
@@ -127,7 +134,7 @@ public class DefaultSubFlox implements SubFlox {
                     case DATA_SOURCE_LOADER -> {
                         try {
                             List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
-                            p.add(getExecResult(nodeEntity.preNodeCodes().getFirst(), execResultMap, param).map(m -> new DataSourceLoaderParam(
+                            p.add(getExecResult(nodeEntity.subFloxPreNodeCodeMap().get(code).getFirst(), execResultMap, param).map(m -> new DataSourceLoaderParam(
                                     nodeEntity.attribute().get(DATA_SOURCE_CODE).toString(),
                                     nodeEntity.attribute().get(ACTION_CODE).toString(),
                                     Map.of("param", m))));
@@ -171,7 +178,7 @@ public class DefaultSubFlox implements SubFlox {
      */
     private void checkNodeMap(Map<String, List<String>> preNodeMap, Map<String, List<String>> postNodeMap) {
         for (NodeEntity entity : nodeMap.values()) {
-            AssertUtils.assertTrue(entity.nodeType().getParamSize() == entity.preNodeCodes().size(), entity.nodeType().getCode() + " must have just [" + entity.nodeType().getParamSize() + "] param");
+            AssertUtils.assertTrue(entity.nodeType().getParamSize() == entity.subFloxPreNodeCodeMap().get(code).size(), entity.nodeType().getCode() + " must have just [" + entity.nodeType().getParamSize() + "] param");
         }
 
         // 只有一个树根
