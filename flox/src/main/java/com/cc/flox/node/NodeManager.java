@@ -1,7 +1,11 @@
 package com.cc.flox.node;
 
 import com.cc.flox.api.ApiManager;
+import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.domain.extractor.RequestExtractor;
+import com.cc.flox.domain.loader.ResponseLoader;
 import com.cc.flox.domain.node.NodeType;
+import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
 import com.cc.flox.meta.entity.EndPointEntity;
 import com.cc.flox.meta.entity.FloxEntity;
 import com.cc.flox.meta.entity.NodeEntity;
@@ -10,6 +14,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 节点管理者
@@ -19,6 +24,16 @@ import java.util.*;
  */
 @Component
 public class NodeManager {
+
+    /**
+     * meta request extractor map
+     */
+    private final Map<String, RequestExtractor<Object>> requestExtractorMap = new ConcurrentHashMap<>();
+
+    /**
+     * meta response loader map
+     */
+    private final Map<String, ResponseLoader<Object>> responseLoaderMap = new ConcurrentHashMap<>();
 
     /**
      * meta node map
@@ -68,6 +83,9 @@ public class NodeManager {
     @Resource
     private ApiManager apiManager;
 
+    @Resource
+    private DataSourceManager dataSourceManager;
+
     /**
      * @param nodeEntity node
      */
@@ -86,11 +104,30 @@ public class NodeManager {
     }
 
     /**
-     * @param nodeEntity sub flox
+     * @param code           code
+     * @param paramClass     参数类型
+     * @param resultClass    结果类型
+     * @param nodePreNodeMap 子流程依赖的节点code，及节点依赖的前置节点
      */
-    public void putMetaSubFlox(NodeEntity nodeEntity) {
-        AssertUtils.assertTrue(nodeEntity.nodeType() == NodeType.SUB_FLOX, "Must put sub flox type");
-        this.metaSubFloxMap.put(nodeEntity.nodeCode(), nodeEntity);
+    public void putMetaSubFlox(String code, List<Class<?>> paramClass, Class<?> resultClass, Map<String, List<String>> nodePreNodeMap) {
+        for (Map.Entry<String, List<String>> entry : nodePreNodeMap.entrySet()) {
+            NodeEntity node = AssertUtils.assertNonNull(this.metaNodeMap.get(entry.getKey()), "Must depend on a non null node");
+            node.subFloxPreNodeCodeMap().put(code, entry.getValue());
+        }
+        this.metaSubFloxMap.put(code, new NodeEntity(
+                code,
+                NodeType.SUB_FLOX,
+                new DefaultSubFlox(
+                        code,
+                        paramClass.getFirst(),
+                        resultClass,
+                        this.getMetaNodeBySubFlox(code),
+                        dataSourceManager),
+                HashMap.newHashMap(1),
+                paramClass,
+                resultClass,
+                HashMap.newHashMap(1)
+        ));
     }
 
     /**
@@ -101,4 +138,35 @@ public class NodeManager {
         return metaSubFloxMap.get(code);
     }
 
+    /**
+     * @param code             code
+     * @param requestExtractor requestExtractor
+     */
+    public void putRequestExtract(String code, RequestExtractor<Object> requestExtractor) {
+        this.requestExtractorMap.put(code, requestExtractor);
+    }
+
+    /**
+     * @param code code
+     * @return requestExtractor
+     */
+    public RequestExtractor<Object> getRequestExtract(String code) {
+        return this.requestExtractorMap.get(code);
+    }
+
+    /**
+     * @param code           code
+     * @param responseLoader responseLoader
+     */
+    public void putResponseLoader(String code, ResponseLoader<Object> responseLoader) {
+        this.responseLoaderMap.put(code, responseLoader);
+    }
+
+    /**
+     * @param code code
+     * @return ResponseLoader
+     */
+    public ResponseLoader<Object> getResponseLoader(String code) {
+        return this.responseLoaderMap.get(code);
+    }
 }

@@ -3,6 +3,7 @@ package com.cc.flox.meta.entity;
 import com.cc.flox.domain.node.Node;
 import com.cc.flox.domain.node.NodeType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,4 +28,9 @@ public record NodeEntity(
         Class<?> resultClass,
 
         Map<String, List<String>> subFloxPreNodeCodeMap) {
+
+    public NodeEntity(String nodeCode, NodeType nodeType, Node node) {
+        this(nodeCode, nodeType, node, HashMap.newHashMap(1), List.of(Map.class), Map.class, HashMap.newHashMap(1));
+    }
+
 }
