@@ -63,7 +63,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                         List.of(new NodeEntity(
                                 "identify",
                                 NodeType.TRANSFORMER,
-                                (Transformer<String, String>) source -> source,
+                                (Transformer<Map<String, String>, Map<String, String>>) source -> source,
                                 HashMap.newHashMap(1),
                                 List.of(Map.class),
                                 Map.class,
