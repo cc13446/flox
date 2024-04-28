@@ -37,14 +37,14 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 META_SUB_FLOX_CODE_ECHO,
                 List.of(Map.class),
                 Map.class,
-                Map.of(META_NODE_CODE_IDENTIFY, List.of(DefaultSubFlox.PARAM_NODE_CODE))
+                Map.of(META_NODE_CODE_IDENTIFY, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM))
         );
 
         nodeManager.putMetaSubFlox(
                 META_SUB_FLOX_CODE_INSERT_DATA_SOURCE,
                 List.of(List.class),
                 List.class,
-                Map.of(META_NODE_CODE_INSERT_DATA_SOURCE, List.of(DefaultSubFlox.PARAM_NODE_CODE))
+                Map.of(META_NODE_CODE_INSERT_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
     }
 }

@@ -14,8 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 /**
  * 节点类型
  *
@@ -37,7 +35,7 @@ public enum NodeType {
 
     RESPONSE_LOADER("responseLoader", 2, ResponseLoader.class, (n, p, a) -> ((ResponseLoader) n).loader(p.getFirst(), p.get(1), a)),
 
-    DATA_SOURCE_LOADER("dataSourceLoader", 1, DataSourceLoader.class, (n, p, a) -> (Mono<Object>) (Mono) ((DataSourceLoader) n).loader((Mono<Map<String, Object>>) (Mono) p.getFirst(), (Mono<DataSourceManager>) (Mono) p.get(1), a)),
+    DATA_SOURCE_LOADER("dataSourceLoader", 2, DataSourceLoader.class, (n, p, a) -> (Mono<Object>) (Mono) ((DataSourceLoader) n).loader(p.getFirst(), (Mono<DataSourceManager>) (Mono) p.get(1), a)),
 
     TRANSFORMER("transformer", 1, Transformer.class, (n, p, a) -> ((Transformer) n).transform(p.getFirst(), a)),
 

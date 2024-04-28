@@ -20,9 +20,14 @@ import java.util.stream.Collectors;
 public class DefaultSubFlox implements SubFlox {
 
     /**
-     * 代表参数的node code
+     * 代表参数的 node code
      */
-    public static final String PARAM_NODE_CODE = "PARAM";
+    public static final String PRE_NODE_CODE_PARAM = "PRE_PARAM";
+
+    /**
+     * 代表 data source manager 的 node code
+     */
+    public static final String PRE_NODE_CODE_DATA_SOURCE_MANAGER = "PRE_DATA_SOURCE_MANAGER";
 
     /**
      * code
@@ -90,19 +95,16 @@ public class DefaultSubFlox implements SubFlox {
 
             Set<String> preNodes = new HashSet<>(preNodeMap.getOrDefault(execStack.peek(), Collections.emptyList()));
             preNodes.removeAll(execResultMap.keySet());
-            preNodes.remove(PARAM_NODE_CODE);
+            preNodes.remove(PRE_NODE_CODE_PARAM);
+            preNodes.remove(PRE_NODE_CODE_DATA_SOURCE_MANAGER);
             if (CollectionUtils.isEmpty(preNodes)) {
                 NodeEntity nodeEntity = AssertUtils.assertNonNull(nodeMap.get(execStack.peek()), "Node [" + execStack.peek() + "] cannot be null");
                 List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
                 switch (nodeEntity.nodeType()) {
-                    case SUB_FLOX, EXTRACTOR, LOADER, TRANSFORMER, BI_TRANSFORMER, TRI_TRANSFORMER -> {
+                    case SUB_FLOX, EXTRACTOR, LOADER, TRANSFORMER, BI_TRANSFORMER, TRI_TRANSFORMER, DATA_SOURCE_LOADER -> {
                         for (String preNode : nodeEntity.subFloxPreNodeCodeMap().get(code)) {
                             p.add(getExecResult(preNode, execResultMap, param));
                         }
-                    }
-                    case DATA_SOURCE_LOADER -> {
-                        p.add(getExecResult(nodeEntity.subFloxPreNodeCodeMap().get(code).getFirst(), execResultMap, param).map(m -> Map.of("param", m)));
-                        p.add(Mono.just(dataSourceManager));
                     }
                     default -> throw new RuntimeException("Invalid node type : " + nodeEntity.nodeType());
                 }
@@ -125,8 +127,11 @@ public class DefaultSubFlox implements SubFlox {
      * @return node code 对应的结果
      */
     private Mono<Object> getExecResult(String nodeCode, Map<String, Mono<Object>> execResultMap, Mono<Object> param) {
-        if (PARAM_NODE_CODE.equals(nodeCode)) {
+        if (PRE_NODE_CODE_PARAM.equals(nodeCode)) {
             return param;
+        }
+        if (PRE_NODE_CODE_DATA_SOURCE_MANAGER.equals(nodeCode)) {
+            return Mono.just(dataSourceManager);
         }
         return execResultMap.get(nodeCode);
     }
