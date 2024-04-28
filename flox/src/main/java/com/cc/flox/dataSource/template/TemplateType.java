@@ -23,7 +23,17 @@ public enum TemplateType {
     /**
      * string template 模板
      */
-    StringTemplate("stg");
+    StringTemplate("stg"),
+
+    /**
+     * mybatis 模板
+     */
+    Mybatis("xml"),
+
+    /**
+     * beetl 模板
+     */
+    Beetl("btl");
 
     private final String code;
 
