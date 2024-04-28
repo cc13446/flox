@@ -4,6 +4,8 @@ import com.cc.flox.domain.node.Node;
 import com.cc.flox.domain.node.NodeType;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 /**
  * @author cc
  * @date 2024/4/4
@@ -11,7 +13,7 @@ import reactor.core.publisher.Mono;
 @FunctionalInterface
 public interface TriTransformer<Source1, Source2, Source3, Result> extends Node {
 
-    Mono<Result> transform(Mono<Source1> source1, Mono<Source2> source2, Mono<Source3> source3);
+    Mono<Result> transform(Mono<Source1> source1, Mono<Source2> source2, Mono<Source3> source3, Mono<Map<String, Object>> attribute);
 
     @Override
     default NodeType getType() {

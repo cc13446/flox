@@ -1,6 +1,9 @@
 package com.cc.flox.initializer;
 
 import com.cc.flox.api.response.ApiResponseWrapper;
+import com.cc.flox.domain.loader.ResponseLoader;
+import com.cc.flox.domain.node.NodeType;
+import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.GsonUtils;
 import jakarta.annotation.Resource;
@@ -8,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -15,6 +19,7 @@ import reactor.core.scheduler.Schedulers;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 
 /**
@@ -34,8 +39,10 @@ public class MetaResponseLoaderInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        nodeManager.putResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON, (source, destination) ->
-                Mono.zip(source, destination).publishOn(Schedulers.boundedElastic()).handle((t, sink) -> {
+        nodeManager.putResponseLoader(new NodeEntity(
+                META_RESPONSE_LOADER_CODE_WRITE_JSON,
+                NodeType.RESPONSE_LOADER,
+                (ResponseLoader<Object>) (source, destination, attribute) -> Mono.zip(source, destination).publishOn(Schedulers.boundedElastic()).handle((t, sink) -> {
                     t.getT2().setStatusCode(HttpStatus.OK);
                     String res = GsonUtils.INS.toJson(ApiResponseWrapper.success(t.getT1()));
                     DataBuffer dataBuffer = t.getT2().bufferFactory().allocateBuffer(res.length());
@@ -47,6 +54,8 @@ public class MetaResponseLoaderInitializer implements CommandLineRunner {
                     }
                     t.getT2().writeWith(Mono.just(dataBuffer)).block();
                     sink.complete();
-                }));
+                }),
+                List.of(Object.class, ServerHttpResponse.class),
+                Void.class));
     }
 }

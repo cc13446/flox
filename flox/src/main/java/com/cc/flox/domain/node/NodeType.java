@@ -5,8 +5,7 @@ import com.cc.flox.domain.extractor.Extractor;
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.loader.Loader;
 import com.cc.flox.domain.loader.ResponseLoader;
-import com.cc.flox.domain.loader.dataSourceLoader.DataSourceLoader;
-import com.cc.flox.domain.loader.dataSourceLoader.DataSourceLoaderParam;
+import com.cc.flox.domain.loader.DataSourceLoader;
 import com.cc.flox.domain.subFlox.SubFlox;
 import com.cc.flox.domain.transformer.BiTransformer;
 import com.cc.flox.domain.transformer.Transformer;
@@ -14,6 +13,8 @@ import com.cc.flox.domain.transformer.TriTransformer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
+
+import java.util.Map;
 
 /**
  * 节点类型
@@ -26,27 +27,23 @@ import reactor.core.publisher.Mono;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public enum NodeType {
 
-    SUB_FLOX("subFlox", 1, SubFlox.class, (n, p) -> ((SubFlox) n).handle(p.getFirst())),
+    SUB_FLOX("subFlox", 1, SubFlox.class, (n, p, a) -> ((SubFlox) n).handle(p.getFirst(), a)),
 
-    EXTRACTOR("extractor", 1, Extractor.class, (n, p) -> ((Extractor) n).extract(p.getFirst())),
+    EXTRACTOR("extractor", 1, Extractor.class, (n, p, a) -> ((Extractor) n).extract(p.getFirst(), a)),
 
-    REQUEST_EXTRACTOR("requestExtractor", 0, RequestExtractor.class, (n, p) -> {
-        throw new RuntimeException("Do not support request extractor in sub flox");
-    }),
+    REQUEST_EXTRACTOR("requestExtractor", 1, RequestExtractor.class, (n, p, a) -> ((RequestExtractor) n).extract(p.getFirst(), a)),
 
-    LOADER("loader", 2, Loader.class, (n, p) -> ((Loader) n).loader(p.getFirst(), p.get(1))),
+    LOADER("loader", 2, Loader.class, (n, p, a) -> ((Loader) n).loader(p.getFirst(), p.get(1), a)),
 
-    RESPONSE_LOADER("responseLoader", 1, ResponseLoader.class, (n, p) -> {
-        throw new RuntimeException("Do not support response loader in sub flox");
-    }),
+    RESPONSE_LOADER("responseLoader", 2, ResponseLoader.class, (n, p, a) -> ((ResponseLoader) n).loader(p.getFirst(), p.get(1), a)),
 
-    DATA_SOURCE_LOADER("dataSourceLoader", 1, DataSourceLoader.class, (n, p) -> (Mono<Object>) (Mono) ((DataSourceLoader) n).loader((Mono<DataSourceLoaderParam>) (Mono) p.getFirst(), (Mono<DataSourceManager>) (Mono) p.get(1))),
+    DATA_SOURCE_LOADER("dataSourceLoader", 1, DataSourceLoader.class, (n, p, a) -> (Mono<Object>) (Mono) ((DataSourceLoader) n).loader((Mono<Map<String, Object>>) (Mono) p.getFirst(), (Mono<DataSourceManager>) (Mono) p.get(1), a)),
 
-    TRANSFORMER("transformer", 1, Transformer.class, (n, p) -> ((Transformer) n).transform(p.getFirst())),
+    TRANSFORMER("transformer", 1, Transformer.class, (n, p, a) -> ((Transformer) n).transform(p.getFirst(), a)),
 
-    BI_TRANSFORMER("biTransformer", 2, BiTransformer.class, (n, p) -> ((BiTransformer) n).transform(p.getFirst(), p.get(1))),
+    BI_TRANSFORMER("biTransformer", 2, BiTransformer.class, (n, p, a) -> ((BiTransformer) n).transform(p.getFirst(), p.get(1), a)),
 
-    TRI_TRANSFORMER("triTransformer", 3, TriTransformer.class, (n, p) -> ((TriTransformer) n).transform(p.getFirst(), p.get(1), p.get(2)));
+    TRI_TRANSFORMER("triTransformer", 3, TriTransformer.class, (n, p, a) -> ((TriTransformer) n).transform(p.getFirst(), p.get(1), p.get(2), a));
 
     /**
      * code

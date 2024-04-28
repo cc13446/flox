@@ -4,6 +4,8 @@ import com.cc.flox.domain.node.Node;
 import com.cc.flox.domain.node.NodeType;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 /**
  * 子流程
  *
@@ -17,7 +19,7 @@ public interface SubFlox extends Node {
      * @param param 参数
      * @return 结果
      */
-    Mono<Object> handle(Mono<Object> param);
+    Mono<Object> handle(Mono<Object> param, Mono<Map<String, Object>> attribute);
 
     @Override
     default NodeType getType() {

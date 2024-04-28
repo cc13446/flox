@@ -1,8 +1,7 @@
 package com.cc.flox.initializer;
 
-import com.cc.flox.domain.loader.dataSourceLoader.DataSourceLoader;
+import com.cc.flox.domain.loader.DataSourceLoader;
 import com.cc.flox.domain.node.NodeType;
-import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
 import com.cc.flox.domain.transformer.Transformer;
 import com.cc.flox.meta.config.MetaDataSourceConfig;
 import com.cc.flox.meta.entity.NodeEntity;
@@ -39,14 +38,14 @@ public class MetaNodeInitializer implements CommandLineRunner {
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_IDENTIFY,
                 NodeType.TRANSFORMER,
-                (Transformer<Object, Object>) source -> source)
+                (Transformer<Object, Object>) (source, a) -> source)
         );
 
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_INSERT_DATA_SOURCE,
                 NodeType.DATA_SOURCE_LOADER,
                 new DataSourceLoader(),
-                Map.of(DefaultSubFlox.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DefaultSubFlox.ACTION_CODE, "insertDataSource"),
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSource"),
                 List.of(List.class),
                 List.class,
                 HashMap.newHashMap(1))

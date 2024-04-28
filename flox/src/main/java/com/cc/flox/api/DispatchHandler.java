@@ -29,7 +29,7 @@ public class DispatchHandler implements HttpHandler {
 
     @Override
     public @NonNull Mono<Void> handle(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-        log.info("Recv http request path [{}] method [{}]", request.getPath().value(), request.getMethod());
+        log.info("Receive http request path [{}] method [{}]", request.getPath().value(), request.getMethod());
         ApiExchange exchange = new ApiExchange();
         exchange.setRequest(request);
         exchange.setResponse(response);

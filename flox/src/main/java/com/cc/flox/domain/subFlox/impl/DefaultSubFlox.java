@@ -1,8 +1,6 @@
 package com.cc.flox.domain.subFlox.impl;
 
 import com.cc.flox.dataSource.DataSourceManager;
-import com.cc.flox.domain.loader.dataSourceLoader.DataSourceLoaderParam;
-import com.cc.flox.domain.node.Node;
 import com.cc.flox.domain.subFlox.SubFlox;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.utils.AssertUtils;
@@ -27,29 +25,9 @@ public class DefaultSubFlox implements SubFlox {
     public static final String PARAM_NODE_CODE = "PARAM";
 
     /**
-     * dataSourceCode
-     */
-    public static final String DATA_SOURCE_CODE = "dataSourceCode";
-
-    /**
-     * actionCode
-     */
-    public static final String ACTION_CODE = "actionCode";
-
-    /**
      * code
      */
     private final String code;
-
-    /**
-     * 参数类型
-     */
-    private final Class<?> sourceClass;
-
-    /**
-     * 结果类型
-     */
-    private final Class<?> resultClass;
 
     /**
      * 子流程中所有的节点
@@ -61,19 +39,15 @@ public class DefaultSubFlox implements SubFlox {
      */
     private final DataSourceManager dataSourceManager;
 
-    public DefaultSubFlox(String code, Class<?> sourceClass, Class<?> resultClass, List<NodeEntity> nodeEntities, DataSourceManager manager) {
+    public DefaultSubFlox(String code, List<NodeEntity> nodeEntities, DataSourceManager manager) {
         this.code = code;
-        this.sourceClass = sourceClass;
-        this.resultClass = resultClass;
         this.nodeMap = nodeEntities.stream().collect(Collectors.toMap(NodeEntity::nodeCode, n -> n));
         this.dataSourceManager = manager;
         AssertUtils.assertTrue(nodeEntities.stream().allMatch(e -> e.subFloxPreNodeCodeMap().containsKey(code)), "Node must have preNode in the subflox");
     }
 
     @Override
-    public Mono<Object> handle(Mono<Object> param) {
-        param = param.doOnNext(o -> AssertUtils.assertTrue(sourceClass.isAssignableFrom(o.getClass()),
-                "SubFlox must handle [" + sourceClass.getCanonicalName() + "] but handle [" + o.getClass().getCanonicalName() + "]"));
+    public Mono<Object> handle(Mono<Object> param, Mono<Map<String, Object>> attribute) {
         AssertUtils.assertTrue(!CollectionUtils.isEmpty(nodeMap), "SubFlox must have nodes");
 
         Map<String, List<String>> preNodeMap = nodeMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().subFloxPreNodeCodeMap().get(code)));
@@ -81,9 +55,7 @@ public class DefaultSubFlox implements SubFlox {
 
         checkNodeMap(preNodeMap, postNodeMap);
 
-        Mono<Object> result = execNodes(param, preNodeMap, postNodeMap);
-        return result.doOnNext(o -> AssertUtils.assertTrue(resultClass.isAssignableFrom(o.getClass()),
-                "SubFlox must return [" + resultClass.getCanonicalName() + "] but return [" + o.getClass().getCanonicalName() + "]"));
+        return execNodes(param, preNodeMap, postNodeMap);
     }
 
     /**
@@ -121,31 +93,20 @@ public class DefaultSubFlox implements SubFlox {
             preNodes.remove(PARAM_NODE_CODE);
             if (CollectionUtils.isEmpty(preNodes)) {
                 NodeEntity nodeEntity = AssertUtils.assertNonNull(nodeMap.get(execStack.peek()), "Node [" + execStack.peek() + "] cannot be null");
-                Node node = nodeEntity.node();
-                Mono<Object> result;
+                List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
                 switch (nodeEntity.nodeType()) {
                     case SUB_FLOX, EXTRACTOR, LOADER, TRANSFORMER, BI_TRANSFORMER, TRI_TRANSFORMER -> {
-                        List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
                         for (String preNode : nodeEntity.subFloxPreNodeCodeMap().get(code)) {
                             p.add(getExecResult(preNode, execResultMap, param));
                         }
-                        result = nodeEntity.nodeType().getExecFunction().exec(node, p);
                     }
                     case DATA_SOURCE_LOADER -> {
-                        try {
-                            List<Mono<Object>> p = new ArrayList<>(nodeEntity.nodeType().getParamSize());
-                            p.add(getExecResult(nodeEntity.subFloxPreNodeCodeMap().get(code).getFirst(), execResultMap, param).map(m -> new DataSourceLoaderParam(
-                                    nodeEntity.attribute().get(DATA_SOURCE_CODE).toString(),
-                                    nodeEntity.attribute().get(ACTION_CODE).toString(),
-                                    Map.of("param", m))));
-                            p.add(Mono.just(dataSourceManager));
-                            result = nodeEntity.nodeType().getExecFunction().exec(node, p);
-                        } catch (ClassCastException e) {
-                            throw new RuntimeException("Data source loader must have just one Map<String, Object> param", e);
-                        }
+                        p.add(getExecResult(nodeEntity.subFloxPreNodeCodeMap().get(code).getFirst(), execResultMap, param).map(m -> Map.of("param", m)));
+                        p.add(Mono.just(dataSourceManager));
                     }
                     default -> throw new RuntimeException("Invalid node type : " + nodeEntity.nodeType());
                 }
+                Mono<Object> result = nodeEntity.exec(p);
                 execResultMap.put(execStack.peek(), result);
                 execStack.pop();
             } else {

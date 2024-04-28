@@ -2,8 +2,6 @@ package com.cc.flox.node;
 
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.dataSource.DataSourceManager;
-import com.cc.flox.domain.extractor.RequestExtractor;
-import com.cc.flox.domain.loader.ResponseLoader;
 import com.cc.flox.domain.node.NodeType;
 import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
 import com.cc.flox.meta.entity.EndPointEntity;
@@ -28,12 +26,12 @@ public class NodeManager {
     /**
      * meta request extractor map
      */
-    private final Map<String, RequestExtractor<Object>> requestExtractorMap = new ConcurrentHashMap<>();
+    private final Map<String, NodeEntity> requestExtractorMap = new ConcurrentHashMap<>();
 
     /**
      * meta response loader map
      */
-    private final Map<String, ResponseLoader<Object>> responseLoaderMap = new ConcurrentHashMap<>();
+    private final Map<String, NodeEntity> responseLoaderMap = new ConcurrentHashMap<>();
 
     /**
      * meta node map
@@ -119,8 +117,6 @@ public class NodeManager {
                 NodeType.SUB_FLOX,
                 new DefaultSubFlox(
                         code,
-                        paramClass.getFirst(),
-                        resultClass,
                         this.getMetaNodeBySubFlox(code),
                         dataSourceManager),
                 HashMap.newHashMap(1),
@@ -139,34 +135,34 @@ public class NodeManager {
     }
 
     /**
-     * @param code             code
-     * @param requestExtractor requestExtractor
+     * @param nodeEntity requestExtractor
      */
-    public void putRequestExtract(String code, RequestExtractor<Object> requestExtractor) {
-        this.requestExtractorMap.put(code, requestExtractor);
+    public void putRequestExtract(NodeEntity nodeEntity) {
+        AssertUtils.assertTrue(nodeEntity.nodeType() == NodeType.REQUEST_EXTRACTOR, "Must put type " + NodeType.REQUEST_EXTRACTOR.getCode());
+        this.requestExtractorMap.put(nodeEntity.nodeCode(), nodeEntity);
     }
 
     /**
      * @param code code
      * @return requestExtractor
      */
-    public RequestExtractor<Object> getRequestExtract(String code) {
+    public NodeEntity getRequestExtract(String code) {
         return this.requestExtractorMap.get(code);
     }
 
     /**
-     * @param code           code
-     * @param responseLoader responseLoader
+     * @param nodeEntity requestExtractor
      */
-    public void putResponseLoader(String code, ResponseLoader<Object> responseLoader) {
-        this.responseLoaderMap.put(code, responseLoader);
+    public void putResponseLoader(NodeEntity nodeEntity) {
+        AssertUtils.assertTrue(nodeEntity.nodeType() == NodeType.RESPONSE_LOADER, "Must put type " + NodeType.RESPONSE_LOADER.getCode());
+        this.responseLoaderMap.put(nodeEntity.nodeCode(), nodeEntity);
     }
 
     /**
      * @param code code
      * @return ResponseLoader
      */
-    public ResponseLoader<Object> getResponseLoader(String code) {
+    public NodeEntity getResponseLoader(String code) {
         return this.responseLoaderMap.get(code);
     }
 }

@@ -1,9 +1,7 @@
 package com.cc.flox.domain.flox;
 
 import com.cc.flox.api.endpoint.ApiExchange;
-import com.cc.flox.domain.extractor.RequestExtractor;
-import com.cc.flox.domain.loader.ResponseLoader;
-import com.cc.flox.domain.subFlox.SubFlox;
+import com.cc.flox.meta.entity.NodeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
@@ -21,24 +19,24 @@ public class Flox {
     /**
      * HTTP请求提取器
      */
-    private RequestExtractor<Object> requestExtractor;
+    private NodeEntity requestExtractor;
 
     /**
      * sub flox
      */
-    private SubFlox subFlox;
+    private NodeEntity subFlox;
 
     /**
      * HTTP响应加载器
      */
-    private ResponseLoader<Object> responseLoader;
+    private NodeEntity responseLoader;
 
     /**
      * handler
      */
     public Mono<Void> handler(ApiExchange exchange) {
-        Mono<Object> res = requestExtractor.extract(Mono.just(exchange.getRequest()));
-        return responseLoader.loader(subFlox.handle(res), Mono.just(exchange.getResponse()));
+        Mono<Object> res = requestExtractor.exec(Mono.just(exchange.getRequest()));
+        return responseLoader.exec(subFlox.exec(res), Mono.just(exchange.getResponse())).mapNotNull(o -> null);
     }
 
 }

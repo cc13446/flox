@@ -1,8 +1,6 @@
 package com.cc.flox.domain.flox;
 
-import com.cc.flox.domain.extractor.RequestExtractor;
-import com.cc.flox.domain.loader.ResponseLoader;
-import com.cc.flox.domain.subFlox.SubFlox;
+import com.cc.flox.meta.entity.NodeEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -21,17 +19,17 @@ public class FloxBuilder {
     /**
      * HTTP请求提取器构建者
      */
-    private Supplier<RequestExtractor<Object>> requestExtractorBuilder;
+    private Supplier<NodeEntity> requestExtractorBuilder;
 
     /**
      * sub flox 构建者
      */
-    private Supplier<SubFlox> subFloxBuilder;
+    private Supplier<NodeEntity> subFloxBuilder;
 
     /**
      * HTTP响应加载器构建者
      */
-    private Supplier<ResponseLoader<Object>> responseLoaderBuilder;
+    private Supplier<NodeEntity> responseLoaderBuilder;
 
     /**
      * 构建方法

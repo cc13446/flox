@@ -2,7 +2,7 @@ package com.cc.flox.api.error;
 
 import com.cc.flox.api.endpoint.ApiExchange;
 import com.cc.flox.api.response.ApiResponseWrapper;
-import com.cc.flox.domain.loader.ResponseLoader;
+import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +39,9 @@ public class ApiErrorHandler {
         } else if (ex instanceof RuntimeException) {
             code = 400;
         }
-        ResponseLoader<Object> responseLoader = nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON);
+        NodeEntity responseLoader = nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON);
         log.error("Exec error : ", ex);
-        return responseLoader.loader(Mono.just(ApiResponseWrapper.error(code, ex.getMessage())), Mono.just(exchange.getResponse()));
+        return responseLoader.exec(Mono.just(ApiResponseWrapper.error(code, ex.getMessage())), Mono.just(exchange.getResponse())).mapNotNull(o -> null);
     }
 
 }
