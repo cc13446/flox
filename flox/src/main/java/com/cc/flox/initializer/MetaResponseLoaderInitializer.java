@@ -9,15 +9,12 @@ import com.cc.flox.utils.GsonUtils;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -43,16 +40,10 @@ public class MetaResponseLoaderInitializer implements CommandLineRunner {
                 META_RESPONSE_LOADER_CODE_WRITE_JSON,
                 NodeType.RESPONSE_LOADER,
                 (ResponseLoader<Object>) (source, destination, attribute) -> Mono.zip(source, destination).publishOn(Schedulers.boundedElastic()).handle((t, sink) -> {
-                    t.getT2().setStatusCode(HttpStatus.OK);
+                    ServerHttpResponse response = t.getT2();
+                    response.setStatusCode(HttpStatus.OK);
                     String res = GsonUtils.INS.toJson(ApiResponseWrapper.success(t.getT1()));
-                    DataBuffer dataBuffer = t.getT2().bufferFactory().allocateBuffer(res.length());
-                    try (OutputStream outputStream = dataBuffer.asOutputStream()) {
-                        outputStream.write(res.getBytes(StandardCharsets.UTF_8));
-                    } catch (IOException ioException) {
-                        sink.error(new RuntimeException(ioException));
-                        return;
-                    }
-                    t.getT2().writeWith(Mono.just(dataBuffer)).block();
+                    response.writeWith(Mono.just(response.bufferFactory().wrap(res.getBytes(StandardCharsets.UTF_8)))).block();
                     sink.complete();
                 }),
                 List.of(Object.class, ServerHttpResponse.class),
