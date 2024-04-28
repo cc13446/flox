@@ -38,7 +38,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_IDENTIFY,
                 NodeType.TRANSFORMER,
-                (Transformer<Object, Object>) (source, a) -> source)
+                (Transformer<Object, Object>) (source, a) -> source,
+                List.of(Object.class),
+                Object.class)
         );
 
         nodeManager.putMetaNode(new NodeEntity(

@@ -33,10 +33,6 @@ public record NodeEntity(
 
         Map<String, List<String>> subFloxPreNodeCodeMap) {
 
-    public NodeEntity(String nodeCode, NodeType nodeType, Node node) {
-        this(nodeCode, nodeType, node, HashMap.newHashMap(1), List.of(Map.class), Map.class, HashMap.newHashMap(1));
-    }
-
     public NodeEntity(String nodeCode, NodeType nodeType, Node node, List<Class<?>> paramClass, Class<?> resultClass) {
         this(nodeCode, nodeType, node, HashMap.newHashMap(1), paramClass, resultClass, HashMap.newHashMap(1));
     }
