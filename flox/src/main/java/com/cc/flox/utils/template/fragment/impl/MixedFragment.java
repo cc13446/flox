@@ -22,7 +22,7 @@ public class MixedFragment implements Fragment {
     public boolean apply(TemplateContext context) {
         boolean res = false;
         for (Fragment f : contents) {
-            res = res || f.apply(context);
+            res = f.apply(context) || res;
         }
         return res;
     }
