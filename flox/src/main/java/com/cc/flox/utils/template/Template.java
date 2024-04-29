@@ -66,6 +66,7 @@ public class Template {
                 throw new RuntimeException("Unknown ognl express [" + p + "] ", e);
             }
         });
+        context.setResult(parser.parse(context.getResult()));
     }
 
 }
