@@ -43,7 +43,7 @@ public class ForEachHandler implements TagHandler {
         Node separatorAtt = attributes.getNamedItem("separator");
         String separator = Optional.ofNullable(separatorAtt).map(Node::getTextContent).orElse(null);
 
-        ForeachFragment forEachSqlFragment = new ForeachFragment(mixedSqlFragment, collection, index, item, open, close, separator);
+        ForeachFragment forEachSqlFragment = new ForeachFragment(mixedSqlFragment, collection, open, close, separator, item, index);
         targetContents.add(forEachSqlFragment);
     }
 }
