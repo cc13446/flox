@@ -95,7 +95,7 @@ public class DataSourceManager {
                 if (useQuestionMark) {
                     spec.setHolder(spec.getHolder().bind(i, o));
                 } else {
-                    spec.setHolder(spec.getHolder().bind("$" + i, o));
+                    spec.setHolder(spec.getHolder().bind("$" + (i + 1), o));
                 }
             }));
         }

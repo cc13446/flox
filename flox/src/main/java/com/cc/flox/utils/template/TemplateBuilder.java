@@ -154,7 +154,7 @@ public class TemplateBuilder {
                     log.error("Parse [{}]", content, exception);
                 }
             });
-            InputSource source = new InputSource(new StringReader(String.format("<?xml version = \"1.0\" ?>\r\n<!DOCTYPE script SYSTEM \"script-1.0.dtd\">\r\n<script>%s</script>", content)));
+            InputSource source = new InputSource(new StringReader(String.format("<?xml version = \"1.0\" ?>\r\n<!DOCTYPE script SYSTEM \"script-1.0.dtd\">\r\n%s", content)));
             return builder.parse(source);
         }
 

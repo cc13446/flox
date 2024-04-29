@@ -6,6 +6,7 @@ CREATE TABLE data_source
     url         VARCHAR(1024) NOT NULL,
     username    VARCHAR(255)  NOT NULL,
     password    VARCHAR(255)  NOT NULL,
+    status      boolean       NOT NULL,
     create_time TIMESTAMPTZ DEFAULT current_timestamp,
     update_time TIMESTAMPTZ DEFAULT current_timestamp
 );

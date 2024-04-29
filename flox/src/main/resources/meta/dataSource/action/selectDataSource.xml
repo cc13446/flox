@@ -1,0 +1,15 @@
+<script>
+    select code, type, url, username, password, status
+    from data_source
+    <where>
+        <if test="code != null">
+            and code like #{code}%
+        </if>
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </where>
+</script>

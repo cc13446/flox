@@ -5,6 +5,7 @@ CREATE TABLE data_source_action
     code             VARCHAR(255) NOT NULL,
     type             VARCHAR(255) NOT NULL,
     sql              text         NOT NULL,
+    status           boolean      NOT NULL,
     create_time      TIMESTAMPTZ DEFAULT current_timestamp,
     update_time      TIMESTAMPTZ DEFAULT current_timestamp
 );
