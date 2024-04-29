@@ -68,6 +68,7 @@ public class TrimFragment implements Fragment {
                 applyPrefix();
                 applySuffix();
             }
+            delegate.append(wrapper.toString());
             trim = true;
         }
 
