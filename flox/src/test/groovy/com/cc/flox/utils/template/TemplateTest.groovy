@@ -13,15 +13,17 @@ class TemplateTest extends Specification {
 
     def "test if"() {
         given:
-        def target = builder.getTemplate("""select * from user where <if test='id != null'> id = #{id} </if>""")
-        def map = ["id":"11"]
+        def target = builder.getTemplate(template)
 
         when:
-        def res = target.process(map as Map<String, Object>)
-        println(res.getResult())
-        println(res.getParameter())
+        def result = target.process(binding as Map<String, Object>)
 
         then:
-        true
+        res == result.getResult()
+        param = result.getParameter()
+
+        where:
+        template                                                               | binding      | res                                     | param
+        """select * from user where <if test='id != null'> id = #{id} </if>""" | ["id": "11"] | """select * from user where   id = ?  """ | [11]
     }
 }
