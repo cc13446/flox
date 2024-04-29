@@ -100,7 +100,7 @@ public class TemplateBuilder {
      * 真正的构造器
      */
     @AllArgsConstructor
-    class Builder {
+    public class Builder {
 
         private final static DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
 
@@ -181,6 +181,5 @@ public class TemplateBuilder {
             }
             return contents;
         }
-
     }
 }
