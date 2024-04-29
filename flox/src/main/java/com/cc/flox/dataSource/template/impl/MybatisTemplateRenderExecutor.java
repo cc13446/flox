@@ -5,6 +5,9 @@ import com.cc.flox.dataSource.template.TemplateRenderExecutor;
 import com.cc.flox.dataSource.template.TemplateType;
 import com.cc.flox.utils.template.Template;
 import com.cc.flox.utils.template.TemplateBuilder;
+import com.cc.flox.utils.template.TemplateContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,11 +22,20 @@ public class MybatisTemplateRenderExecutor implements TemplateRenderExecutor {
     /**
      * 模板构造器
      */
-    private static final TemplateBuilder templateBuilder = new TemplateBuilder();
+    private final TemplateBuilder templateBuilder;
+
+    @Autowired
+    public MybatisTemplateRenderExecutor(ResourceLoader resourceLoader) {
+        this.templateBuilder = new TemplateBuilder(resourceLoader);
+    }
 
     @Override
     public TemplateRenderContext invoke(TemplateRenderContext context) {
         Template template = templateBuilder.getTemplate(context.getAction().getSql());
+        TemplateContext res = template.process(context.getParam());
+        context.setRenderedSQL(res.getResult());
+        context.setUseQuestionMark(true);
+        context.setRenderedParam(res.getParameter());
         return context;
     }
 

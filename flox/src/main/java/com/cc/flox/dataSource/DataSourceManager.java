@@ -5,6 +5,8 @@ import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
 import com.cc.flox.executor.ExecutorInvoker;
 import com.cc.flox.utils.AssertUtils;
+import com.cc.flox.utils.HolderUtils;
+import com.cc.flox.utils.StreamUtils;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactories;
@@ -84,11 +86,20 @@ public class DataSourceManager {
         TemplateRenderContext context = new TemplateRenderContext(action, param);
         context = invoker.invoke(TemplateRenderExecutor.class, context);
 
-        DatabaseClient.GenericExecuteSpec spec = dataSource.getTemplate().getDatabaseClient().sql(context.getRenderedSQL());
-        if (!CollectionUtils.isEmpty(context.getRenderedParam())) {
-            spec = spec.bindValues(context.getRenderedParam());
+        HolderUtils<DatabaseClient.GenericExecuteSpec> spec = new HolderUtils<>(dataSource.getTemplate().getDatabaseClient().sql(context.getRenderedSQL()));
+        if (context.isCustomBind()) {
+            spec.setHolder(spec.getHolder().bindValues(context.getCustomBindParam()));
+        } else if (!CollectionUtils.isEmpty(context.getRenderedParam())) {
+            boolean useQuestionMark = context.isUseQuestionMark();
+            context.getRenderedParam().forEach(StreamUtils.withCounter((i, o) -> {
+                if (useQuestionMark) {
+                    spec.setHolder(spec.getHolder().bind(i, o));
+                } else {
+                    spec.setHolder(spec.getHolder().bind("$" + i, o));
+                }
+            }));
         }
-        return spec.fetch().all().collectList();
+        return spec.getHolder().fetch().all().collectList();
     }
 
 

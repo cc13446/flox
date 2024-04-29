@@ -4,6 +4,7 @@ import com.cc.flox.dataSource.action.Action;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,25 @@ public class TemplateRenderContext {
      * 渲染后参数
      */
     @Setter
-    private  Map<String, Object> renderedParam;
+    private List<Object> renderedParam;
+
+    /**
+     * 占位符是否使用问号
+     */
+    @Setter
+    private boolean useQuestionMark;
+
+    /**
+     * 是否自定义绑定
+     */
+    @Setter
+    private boolean customBind = false;
+
+    /**
+     * 自定义绑定参数
+     */
+    @Setter
+    private Map<String, Object> customBindParam;
 
     public TemplateRenderContext(Action action, Map<String, Object> param) {
         this.action = action;

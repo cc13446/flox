@@ -10,7 +10,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupString;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -40,12 +39,13 @@ public class StringTemplateRenderExecutor implements TemplateRenderExecutor {
     private STGroup getSTGroup(TemplateRenderContext context) {
         STGroup sql = new STGroupString(context.getAction().getSql());
         AtomicInteger index = new AtomicInteger(1);
-        context.setRenderedParam(new ConcurrentHashMap<>());
+        context.setRenderedParam(new LinkedList<>());
+        context.setUseQuestionMark(false);
         // 自定义属性渲染器
         AttributeRenderer attributeRenderer = (o, format, locale) -> {
             if ("p".equals(format)) {
                 String key = "$" + index.getAndIncrement();
-                context.getRenderedParam().put(key, o);
+                context.getRenderedParam().add(o);
                 return key;
             }
             return o.toString();

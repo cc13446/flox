@@ -17,7 +17,8 @@ public class SqlRenderExecutor implements TemplateRenderExecutor {
     @Override
     public TemplateRenderContext invoke(TemplateRenderContext context) {
         context.setRenderedSQL(context.getAction().getSql());
-        context.setRenderedParam(context.getParam());
+        context.setCustomBind(true);
+        context.setCustomBindParam(context.getParam());
         return context;
     }
 
