@@ -1,11 +1,11 @@
 package com.cc.flox.utils.template;
 
+import lombok.Getter;
 import ognl.OgnlContext;
 import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 模板上下文
@@ -62,6 +62,76 @@ public class TemplateContext {
         public String getSourceSetter(OgnlContext context, Object target, Object name) {
             return null;
         }
+    }
 
+    /**
+     * 占位符绑定
+     */
+    @Getter
+    private final Map<String, Object> binding = new HashMap<>();
+
+    /**
+     * 结果
+     */
+    private StringBuilder result = new StringBuilder();
+
+    /**
+     * 参数
+     */
+    @Getter
+    private final List<Object> parameter = new ArrayList<>(20);
+
+    /**
+     * 唯一下标
+     */
+    private int uniqueIndex = 0;
+
+    public TemplateContext(Map<String, Object> data) {
+        this.binding.put(BINDING_DATA, data);
+    }
+
+    /**
+     * 绑定参数
+     *
+     * @param key   key
+     * @param value value
+     */
+    public void bind(String key, Object value) {
+        binding.put(key, value);
+    }
+
+    /**
+     * @param fragment 语句
+     */
+    public void append(String fragment) {
+        result.append(fragment).append(" ");
+    }
+
+    /**
+     * @return result
+     */
+    public String getResult() {
+        return result.toString();
+    }
+
+    /**
+     * @param result result
+     */
+    public void setResult(String result) {
+        this.result = new StringBuilder(result);
+    }
+
+    /**
+     * @param parameter 参数
+     */
+    public void addParameter(Object parameter) {
+        this.parameter.add(parameter);
+    }
+
+    /**
+     * @return 全局唯一下标
+     */
+    public int getUniqueIndex() {
+        return ++uniqueIndex;
     }
 }
