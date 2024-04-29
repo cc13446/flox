@@ -1,4 +1,6 @@
-<script>
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
     select code, type, url, username, password, status
     from data_source
     <where>
@@ -12,4 +14,4 @@
             and status = #{status}
         </if>
     </where>
-</script>
+</root>

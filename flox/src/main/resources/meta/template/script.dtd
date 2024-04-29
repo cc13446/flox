@@ -1,4 +1,4 @@
-<!ELEMENT script (#PCDATA | trim | where | set | foreach | choose | if)*>
+<!ELEMENT root (#PCDATA | trim | where | set | foreach | choose | if)*>
 <!ELEMENT trim (#PCDATA | trim | where | set | foreach | choose | if)*>
 <!ATTLIST trim
         prefix CDATA #IMPLIED

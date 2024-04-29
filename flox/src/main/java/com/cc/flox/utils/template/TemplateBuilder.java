@@ -124,7 +124,7 @@ public class TemplateBuilder {
         public Template build() {
             try {
                 Document document = parseXml(content);
-                List<Fragment> contents = buildDynamicTag(document.getElementsByTagName("script").item(0));
+                List<Fragment> contents = buildDynamicTag(document.getElementsByTagName("root").item(0));
                 return new Template(new MixedFragment(contents));
             } catch (Exception e) {
                 throw new RuntimeException("Error constructing the XML template", e);
@@ -154,7 +154,7 @@ public class TemplateBuilder {
                     log.error("Parse [{}]", content, exception);
                 }
             });
-            InputSource source = new InputSource(new StringReader(String.format("<?xml version = \"1.0\" ?>\r\n<!DOCTYPE script SYSTEM \"script-1.0.dtd\">\r\n%s", content)));
+            InputSource source = new InputSource(new StringReader(content));
             return builder.parse(source);
         }
 
