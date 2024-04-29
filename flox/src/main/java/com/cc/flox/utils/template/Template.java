@@ -2,7 +2,6 @@ package com.cc.flox.utils.template;
 
 import com.cc.flox.utils.template.fragment.Fragment;
 import com.cc.flox.utils.template.placeholder.PlaceHolderParser;
-import ognl.*;
 
 import java.util.Map;
 import java.util.Objects;
@@ -55,16 +54,12 @@ public class Template {
      */
     private void parseParameter(TemplateContext context) {
         PlaceHolderParser parser = new PlaceHolderParser(OPEN_TOKEN, CLOSE_TOKEN, (p) -> {
-            try {
-                Object v = OgnlUtils.parseExpression(p, context.getBinding());
-                if (Objects.isNull(v)) {
-                    throw new RuntimeException("Ognl cannot parse +[" + p + "] value");
-                }
-                context.addParameter(v);
-                return "?";
-            } catch (ParseException | OgnlException e) {
-                throw new RuntimeException("Unknown ognl express [" + p + "] ", e);
+            Object v = OgnlUtils.parseExpression(p, context.getBinding());
+            if (Objects.isNull(v)) {
+                throw new RuntimeException("Ognl cannot parse +[" + p + "] value");
             }
+            context.addParameter(v);
+            return "?";
         });
         context.setResult(parser.parse(context.getResult()));
     }
