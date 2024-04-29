@@ -1,6 +1,7 @@
 package com.cc.flox.utils.template;
 
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -57,6 +58,10 @@ public class TemplateContext {
      * @param fragment 语句
      */
     public void append(String fragment) {
+        fragment = fragment.trim();
+        if (StringUtils.isBlank(fragment)) {
+            return;
+        }
         result.append(fragment).append(" ");
     }
 

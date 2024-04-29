@@ -52,6 +52,10 @@ public class TrimFragment implements Fragment {
 
         @Override
         public void append(String fragment) {
+            fragment = fragment.trim();
+            if (StringUtils.isBlank(fragment)) {
+                return;
+            }
             wrapper.append(fragment).append(" ");
         }
 
@@ -78,7 +82,7 @@ public class TrimFragment implements Fragment {
         private void applySuffix() {
             if (!CollectionUtils.isEmpty(suffixesToOverride)) {
                 for (String toRemove : suffixesToOverride) {
-                    if (wrapper.toString().endsWith(toRemove)) {
+                    if (wrapper.toString().toUpperCase().endsWith(toRemove)) {
                         int start = wrapper.length() - toRemove.length();
                         int end = wrapper.length();
                         wrapper.delete(start, end);
@@ -97,7 +101,7 @@ public class TrimFragment implements Fragment {
         private void applyPrefix() {
             if (!CollectionUtils.isEmpty(prefixesToOverride)) {
                 for (String toRemove : prefixesToOverride) {
-                    if (wrapper.toString().startsWith(toRemove.toUpperCase())) {
+                    if (wrapper.toString().toUpperCase().startsWith(toRemove.toUpperCase())) {
                         wrapper.delete(0, toRemove.length());
                         break;
                     }
