@@ -5,6 +5,7 @@ import com.cc.flox.utils.template.placeholder.PlaceHolderParser;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 模板
@@ -53,13 +54,14 @@ public class Template {
      * @param context 上下文
      */
     private void parseParameter(TemplateContext context) {
+        AtomicInteger index = new AtomicInteger(1);
         PlaceHolderParser parser = new PlaceHolderParser(OPEN_TOKEN, CLOSE_TOKEN, (p) -> {
             Object v = OgnlUtils.parseExpression(p, context.getBinding());
             if (Objects.isNull(v)) {
                 throw new RuntimeException("Ognl cannot parse +[" + p + "] value");
             }
             context.addParameter(v);
-            return "?";
+            return "$" + index.getAndIncrement();
         });
         context.setResult(parser.parse(context.getResult()));
     }

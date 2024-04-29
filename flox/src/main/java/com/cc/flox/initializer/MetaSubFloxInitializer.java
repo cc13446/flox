@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-import static com.cc.flox.initializer.MetaNodeInitializer.META_NODE_CODE_IDENTIFY;
-import static com.cc.flox.initializer.MetaNodeInitializer.META_NODE_CODE_INSERT_DATA_SOURCE;
+import static com.cc.flox.initializer.MetaNodeInitializer.*;
 
 
 /**
@@ -27,6 +26,8 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_ECHO = "meta_sub_echo";
 
     public static final String META_SUB_FLOX_CODE_INSERT_DATA_SOURCE = "meta_sub_insert_data_source";
+
+    public static final String META_SUB_FLOX_CODE_SELECT_DATA_SOURCE = "meta_sub_select_data_source";
 
     @Resource
     private NodeManager nodeManager;
@@ -45,6 +46,14 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 List.of(List.class),
                 List.class,
                 Map.of(META_NODE_CODE_INSERT_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+        );
+
+        nodeManager.putMetaSubFlox(
+                META_SUB_FLOX_CODE_SELECT_DATA_SOURCE,
+                List.of(Map.class),
+                List.class,
+                Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
+                        META_NODE_CODE_SELECT_DATA_SOURCE, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
     }
 }

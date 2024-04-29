@@ -13,11 +13,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import static com.cc.flox.initializer.MetaRequestExtractorInitializer.META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP;
-import static com.cc.flox.initializer.MetaRequestExtractorInitializer.META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP;
+import static com.cc.flox.initializer.MetaRequestExtractorInitializer.*;
 import static com.cc.flox.initializer.MetaResponseLoaderInitializer.META_RESPONSE_LOADER_CODE_WRITE_JSON;
-import static com.cc.flox.initializer.MetaSubFloxInitializer.META_SUB_FLOX_CODE_ECHO;
-import static com.cc.flox.initializer.MetaSubFloxInitializer.META_SUB_FLOX_CODE_INSERT_DATA_SOURCE;
+import static com.cc.flox.initializer.MetaSubFloxInitializer.*;
 
 
 /**
@@ -40,6 +38,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         apiManager.insertHandler(getEchoEndPoint()).get();
         apiManager.insertHandler(getInsertDataSourceEndPoint()).get();
+        apiManager.insertHandler(getSelectDataSourceEndPoint()).get();
     }
 
     /**
@@ -62,6 +61,17 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
         return new ApiEndPoint("/data-source/insert", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return select data source end point
+     */
+    private ApiEndPoint getSelectDataSourceEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/data-source/select", ApiMethod.GET, builder.builder());
     }
 
     /**

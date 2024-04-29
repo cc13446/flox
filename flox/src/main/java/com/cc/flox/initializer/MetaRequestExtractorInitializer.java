@@ -31,6 +31,7 @@ public class MetaRequestExtractorInitializer implements CommandLineRunner {
 
     public static final String META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP = "meta_request_extractor_query_params_to_map";
     public static final String META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP = "meta_request_extractor_body_params_to_list_map";
+    public static final String META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP = "meta_request_extractor_body_params_to_map";
 
     @Resource
     private NodeManager nodeManager;
@@ -56,5 +57,18 @@ public class MetaRequestExtractorInitializer implements CommandLineRunner {
                 }),
                 List.of(ServerHttpRequest.class),
                 List.class));
+
+        nodeManager.putRequestExtract(new NodeEntity(
+                META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP,
+                NodeType.REQUEST_EXTRACTOR,
+                (RequestExtractor<Map<String, Object>>) (m, a) -> m.flatMap(r -> DataBufferUtils.join(r.getBody())).flatMap(dataBuffer -> {
+                    byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                    dataBuffer.read(bytes);
+                    DataBufferUtils.release(dataBuffer);
+                    return Mono.just(GsonUtils.INS.fromJson(new String(bytes, StandardCharsets.UTF_8), new TypeToken<Map<String, Object>>() {
+                    }));
+                }),
+                List.of(ServerHttpRequest.class),
+                Map.class));
     }
 }

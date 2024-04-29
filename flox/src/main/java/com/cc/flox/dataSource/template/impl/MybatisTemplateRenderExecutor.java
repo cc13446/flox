@@ -34,7 +34,7 @@ public class MybatisTemplateRenderExecutor implements TemplateRenderExecutor {
         Template template = templateBuilder.getTemplate(context.getAction().getSql());
         TemplateContext res = template.process(context.getParam());
         context.setRenderedSQL(res.getResult());
-        context.setUseQuestionMark(true);
+        context.setUseQuestionMark(false);
         context.setRenderedParam(res.getParameter());
         return context;
     }

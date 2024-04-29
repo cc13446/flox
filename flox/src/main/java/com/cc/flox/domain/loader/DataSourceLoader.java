@@ -23,8 +23,15 @@ public class DataSourceLoader implements Loader<Object, DataSourceManager, List<
     public static final String ACTION_CODE = "actionCode";
 
     @Override
+    @SuppressWarnings("unchecked")
     public Mono<List<Map<String, Object>>> loader(Mono<Object> param, Mono<DataSourceManager> dataSourceManager, Mono<Map<String, Object>> attribute) {
-        Mono<Map<String, Object>> p = param.map(o -> Map.of("param", o));
+        Mono<Map<String, Object>> p = param.map(o -> {
+            if (Map.class.isAssignableFrom(o.getClass())) {
+                return (Map<String, Object>) o;
+            } else {
+                return Map.of("param", o);
+            }
+        });
         return Mono.zip(p, dataSourceManager, attribute).flatMap(t -> t.getT2().exec(t.getT3().get(DATA_SOURCE_CODE).toString(), t.getT3().get(ACTION_CODE).toString(), t.getT1()));
     }
 }

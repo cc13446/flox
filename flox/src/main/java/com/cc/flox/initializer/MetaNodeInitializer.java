@@ -7,6 +7,7 @@ import com.cc.flox.domain.transformer.Transformer;
 import com.cc.flox.meta.config.MetaDataSourceConfig;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
+import com.cc.flox.utils.AssertUtils;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -28,8 +29,9 @@ import java.util.Map;
 public class MetaNodeInitializer implements CommandLineRunner {
 
     public static final String META_NODE_CODE_IDENTIFY = "meta_node_identify";
-
+    public static final String META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP = "meta_node_multi_value_map_to_map";
     public static final String META_NODE_CODE_INSERT_DATA_SOURCE = "meta_node_insert_data_source";
+    public static final String META_NODE_CODE_SELECT_DATA_SOURCE = "meta_node_select_data_source";
 
     @Resource
     private NodeManager nodeManager;
@@ -51,6 +53,33 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSource"),
                 List.of(List.class, DataSourceManager.class),
                 List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_SELECT_DATA_SOURCE,
+                NodeType.DATA_SOURCE_LOADER,
+                new DataSourceLoader(),
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSource"),
+                List.of(Map.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP,
+                NodeType.TRANSFORMER,
+                (Transformer<Map<String, List<Object>>, Map<String, Object>>) (m, a) -> m.map(map -> {
+                    Map<String, Object> res = new HashMap<>();
+                    for (Map.Entry<String, List<Object>> entry : map.entrySet()) {
+                        AssertUtils.assertTrue(entry.getValue().size() == 1, "Multi map cannot trans to map, because [" + entry.getKey() + "] has more then one value");
+                        res.put(entry.getKey(), entry.getValue().getFirst());
+                    }
+                    return res;
+                }),
+                HashMap.newHashMap(1),
+                List.of(Map.class),
+                Map.class,
                 HashMap.newHashMap(1))
         );
     }
