@@ -11,7 +11,7 @@ class TemplateTest extends Specification {
 
     def builder = new TemplateBuilder(new DefaultResourceLoader())
 
-    def "test if"() {
+    def "test"() {
         given:
         def target = builder.getTemplate(template)
 
@@ -20,10 +20,14 @@ class TemplateTest extends Specification {
 
         then:
         res == result.getResult()
-        param = result.getParameter()
+        param.size() == result.getParameter().size()
+        for (int i = 0; i < param.size(); i++) {
+            param.get(i) == result.getParameter().get(i)
+        }
 
         where:
-        template                                                               | binding      | res                                     | param
-        """select * from user where <if test='id != null'> id = #{id} </if>""" | ["id": "11"] | """select * from user where   id = ?  """ | [11]
+        template                                                                                                                            | binding                    | res                                       | param
+        """select * from user where <if test='id != null'> id = #{id} </if>"""                                                              | ["id": "11"]               | """select * from user where   id = ?  """ | [11]
+        """select * from user <where> <if test='id != null'> and id = #{id} </if> <if test='name != null' > name = #{name}</if> </where>""" | ["id": "11", "name": "cc"] | """select * from user where   id = ?  """ | [11, "cc"]
     }
 }

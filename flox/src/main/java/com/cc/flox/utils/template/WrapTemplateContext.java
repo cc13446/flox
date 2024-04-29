@@ -1,5 +1,8 @@
 package com.cc.flox.utils.template;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 代理的上下文
  *
@@ -46,5 +49,15 @@ public class WrapTemplateContext extends TemplateContext {
     @Override
     public int getUniqueIndex() {
         return delegate.getUniqueIndex();
+    }
+
+    @Override
+    public Map<String, Object> getBinding() {
+        return delegate.getBinding();
+    }
+
+    @Override
+    public List<Object> getParameter() {
+        return delegate.getParameter();
     }
 }
