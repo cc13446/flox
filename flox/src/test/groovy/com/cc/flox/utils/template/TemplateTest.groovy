@@ -29,5 +29,6 @@ class TemplateTest extends Specification {
         template                                                                                                                                | binding                    | res                                                 | param
         """select * from user where <if test='id != null'> id = #{id} </if>"""                                                                  | ["id": "11"]               | """select * from user where id = ? """              | [11]
         """select * from user <where> <if test='id != null'> and id = #{id} </if> <if test='name != null' > and name = #{name}</if> </where>""" | ["id": "11", "name": "cc"] | """select * from user WHERE id = ? and name = ? """ | [11, "cc"]
+        """update user <set> <if test='id != null'> id = #{id}, </if><if test='name != null'> name = #{name}, </if> </set>"""                   | ["id": "11", "name": "cc"] | """update user SET id = ?, name = ? """             | [11, "cc"]
     }
 }
