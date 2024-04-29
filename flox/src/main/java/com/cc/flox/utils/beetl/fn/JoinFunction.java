@@ -1,4 +1,4 @@
-package com.cc.flox.utils.beetl;
+package com.cc.flox.utils.beetl.fn;
 
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.core.Context;

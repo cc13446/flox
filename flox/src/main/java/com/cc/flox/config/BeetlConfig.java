@@ -43,7 +43,7 @@ public class BeetlConfig {
      */
     private static void updateFnMap(org.beetl.core.Configuration cfg) {
         Map<String, String> fnMap = Optional.ofNullable(cfg.getFnMap()).orElse(new HashMap<>());
-        fnMap.put("join", "com.cc.flox.utils.beetl.JoinFunction");
+        fnMap.put("join", "com.cc.flox.utils.beetl.fn.JoinFunction");
         cfg.setFnMap(fnMap);
     }
 }
