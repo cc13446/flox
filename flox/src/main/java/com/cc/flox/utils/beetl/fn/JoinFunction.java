@@ -7,6 +7,7 @@ import org.beetl.core.GeneralLoopStatus;
 import org.beetl.core.ILoopStatus;
 import org.beetl.core.statement.PlaceholderST;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,20 +31,25 @@ public class JoinFunction implements Function {
     }
 
     /**
+     * @param o o
+     * @return 参数是字符串，而且含有分隔符
+     */
+    private static boolean isStringWithSplit(Object o) {
+        return (o instanceof String) && ((String) o).contains(SINGLE_SPLIT);
+    }
+
+    /**
      * @param it      可迭代数组
      * @param joinStr join字符串
-     * @return join结果
      */
-    private static String join(ILoopStatus it, String joinStr) {
-        StringBuilder buf = new StringBuilder();
+    private static void join(ILoopStatus it, String joinStr, Context ctx) throws IOException {
         while (it.hasNext()) {
             Object o = it.next();
             if (!it.isFirst()) {
-                buf.append(joinStr);
+                ctx.byteWriter.writeString(joinStr);
             }
-            buf.append(o);
+            PlaceholderST.output.write(ctx, o);
         }
-        return buf.toString();
     }
 
     @Override
@@ -67,19 +73,11 @@ public class JoinFunction implements Function {
             if (paras.length == 2) {
                 joinStr = (String) paras[1];
             }
-            ctx.byteWriter.writeString(join(it, joinStr));
+            join(it, joinStr, ctx);
         } catch (Exception e) {
-            // IO错误这里不抛出
+            throw new RuntimeException("Beetl join error : ", e);
         }
         return null;
-    }
-
-    /**
-     * @param o o
-     * @return 参数是字符串，而且含有分隔符
-     */
-    private boolean isStringWithSplit(Object o) {
-        return (o instanceof String) && ((String) o).contains(SINGLE_SPLIT);
     }
 }
 
