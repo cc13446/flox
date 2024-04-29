@@ -1,8 +1,11 @@
 package com.cc.flox.utils.template;
 
 import com.cc.flox.utils.template.fragment.Fragment;
+import com.cc.flox.utils.template.placeholder.PlaceHolderParser;
+import ognl.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 模板
@@ -11,6 +14,10 @@ import java.util.Map;
  * @date 2024/4/28
  */
 public class Template {
+
+    public final static String OPEN_TOKEN = "#{";
+
+    public final static String CLOSE_TOKEN = "}";
 
     /**
      * 根语句
@@ -47,6 +54,18 @@ public class Template {
      * @param context 上下文
      */
     private void parseParameter(TemplateContext context) {
+        PlaceHolderParser parser = new PlaceHolderParser(OPEN_TOKEN, CLOSE_TOKEN, (p) -> {
+            try {
+                Object v = OgnlUtils.parseExpression(p, context.getBinding());
+                if (Objects.isNull(v)) {
+                    throw new RuntimeException("Ognl cannot parse +[" + p + "] value");
+                }
+                context.addParameter(v);
+                return "?";
+            } catch (ParseException | OgnlException e) {
+                throw new RuntimeException("Unknown ognl express [" + p + "] ", e);
+            }
+        });
     }
 
 }
