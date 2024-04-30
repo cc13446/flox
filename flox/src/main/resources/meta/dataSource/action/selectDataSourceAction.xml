@@ -1,0 +1,19 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    select * from data_source_action
+    <where>
+        <if test="code != null">
+            and code = #{code}
+        </if>
+        <if test="dataSourceCode != null">
+            and data_source_code = #{dataSourceCode}
+        </if>
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        <if test="status != null">
+            and status = CAST(#{status} AS BOOLEAN)
+        </if>
+    </where>
+</root>
