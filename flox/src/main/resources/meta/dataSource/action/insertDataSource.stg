@@ -1,7 +1,7 @@
 insertDataSource(param) ::= <%
-INSERT INTO data_source (code,type,url,username,password,status)
+INSERT INTO data_source (code,type,url,username,password,status,config,attribute)
 VALUES
 <param:{item|
-    (<item.code;format="p">, <item.type;format="p">, <item.url;format="p">, <item.username;format="p">, <item.password;format="p">, true)<if(rest(param))>,<endif>
+    (<item.code;format="p">, <item.type;format="p">, <item.url;format="p">, <item.username;format="p">, <item.password;format="p">, true, <item.config;format="p">, <item.attribute;format="p">)<if(rest(param))>,<endif>
 }>
 %>

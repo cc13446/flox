@@ -1,11 +1,12 @@
 CREATE TABLE data_source_action
 (
     id               SERIAL PRIMARY KEY,
-    data_source_code VARCHAR(255) NOT NULL,
-    code             VARCHAR(255) NOT NULL,
-    type             VARCHAR(255) NOT NULL,
-    sql              text         NOT NULL,
-    status           boolean      NOT NULL,
+    data_source_code VARCHAR(255)  NOT NULL,
+    code             VARCHAR(255)  NOT NULL,
+    type             VARCHAR(255)  NOT NULL,
+    sql              TEXT          NOT NULL,
+    status           BOOLEAN       NOT NULL,
+    attribute        VARCHAR(4096) NOT NULL,
     create_time      TIMESTAMPTZ DEFAULT current_timestamp,
     update_time      TIMESTAMPTZ DEFAULT current_timestamp
 );

@@ -1,7 +1,7 @@
 <?xml version = "1.0" ?>
 <!DOCTYPE root SYSTEM "script.dtd">
 <root>
-    select code, type, url, username, password, status from data_source
+    select * from data_source
     <where>
         <if test="code != null">
             and code like CONCAT('%', #{code}, '%')
