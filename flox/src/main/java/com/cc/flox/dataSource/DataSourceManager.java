@@ -19,9 +19,7 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,9 +41,14 @@ public class DataSourceManager {
     private final AtomicBoolean hasStart = new AtomicBoolean(false);
 
     /**
+     * 元数据源 Map
+     */
+    private final Map<String, DataSource> metaDataSources = new ConcurrentHashMap<>();
+
+    /**
      * 数据源 Map
      */
-    private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
+    private volatile Map<String, DataSource> dataSources = Collections.emptyMap();
 
     @Resource
     private ExecutorInvoker invoker;
@@ -66,13 +69,19 @@ public class DataSourceManager {
     private void doSynchronize(long count) {
         log.info("Start synchronize data source, count {}", count);
         nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true"))).subscribe(l -> {
-           try{
-               List<DataSource> dataSourceList = (List<DataSource>) l;
-           } finally {
-               Mono.delay(Duration.ofSeconds(10)).subscribe(this::doSynchronize);
-           }
+            try {
+                List<DataSource> dataSourceList = (List<DataSource>) l;
+                Map<String, DataSource> map = HashMap.newHashMap(dataSourceList.size());
+                for (DataSource d : dataSourceList) {
+                    map.put(d.getCode(), d);
+                }
+                this.dataSources = Collections.unmodifiableMap(map);
+            } catch (Exception e) {
+                log.error("Synchronize data source error : ", e);
+            } finally {
+                Mono.delay(Duration.ofSeconds(10)).subscribe(this::doSynchronize);
+            }
         });
-        log.info("Done synchronize data source");
     }
 
     /**
@@ -80,7 +89,11 @@ public class DataSourceManager {
      * @return code 对应的数据源
      */
     public DataSource get(String code) {
-        return dataSources.get(code);
+        DataSource res = dataSources.get(code);
+        if (Objects.isNull(res)) {
+            res = metaDataSources.get(code);
+        }
+        return res;
     }
 
     /**
@@ -88,8 +101,8 @@ public class DataSourceManager {
      *
      * @param dataSourceConfig 数据源配置
      */
-    public void insert(DataSourceConfiguration dataSourceConfig) {
-        dataSources.compute(dataSourceConfig.code(), (key, oldPool) -> {
+    public void insertMeta(DataSourceConfiguration dataSourceConfig) {
+        metaDataSources.compute(dataSourceConfig.code(), (key, oldPool) -> {
             if (Objects.isNull(oldPool)) {
                 return new DataSource(
                         key,
@@ -111,7 +124,7 @@ public class DataSourceManager {
      */
     public Mono<List<Map<String, Object>>> exec(String dataSourceCode, String
             actionCode, Map<String, Object> param) {
-        DataSource dataSource = this.dataSources.get(dataSourceCode);
+        DataSource dataSource = get(dataSourceCode);
         AssertUtils.assertNonNull(dataSourceCode, "Exec data source action error, unknown data source : " + dataSourceCode);
 
         Action action = dataSource.getActions().get(actionCode);

@@ -50,7 +50,7 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
         // 连接到元数据库
-        dataSourceManager.insert(metaConfig.getMetaDataSourceConfig().getDataSourceConfiguration());
+        dataSourceManager.insertMeta(metaConfig.getMetaDataSourceConfig().getDataSourceConfiguration());
 
         // 自动建立数据表
         DataSource ds = AssertUtils.assertNonNull(dataSourceManager.get(MetaDataSourceConfig.META_DATA_SOURCE_KEY), "Meta dataSource cannot be null");
