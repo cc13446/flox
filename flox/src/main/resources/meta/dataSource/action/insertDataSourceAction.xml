@@ -1,0 +1,9 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    insert into data_source_action(data_source_code, code, type, sql, status, attribute)
+    values
+    <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
+        #{item.dataSourceCode}, #{item.code}, #{item.type}, #{item.sql}, true, #{item.attribute}
+    </foreach>
+</root>

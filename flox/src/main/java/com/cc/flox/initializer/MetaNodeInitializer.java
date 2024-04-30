@@ -48,6 +48,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_INSERT_DATA_SOURCE = "meta_node_insert_data_source";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE = "meta_node_select_data_source";
 
+    public static final String META_NODE_CODE_INSERT_DATA_SOURCE_ACTION = "meta_node_insert_data_source_action";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE_ACTION = "meta_node_select_data_source_action";
 
     public static final String META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION = "meta_node_concat_data_source_and_action";
@@ -103,6 +104,16 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 DATA_SOURCE_LOADER,
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSource"),
                 List.of(Map.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_INSERT_DATA_SOURCE_ACTION,
+                NodeType.DATA_SOURCE_LOADER,
+                DATA_SOURCE_LOADER,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSourceAction"),
+                List.of(List.class, DataSourceManager.class),
                 List.class,
                 HashMap.newHashMap(1))
         );
