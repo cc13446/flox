@@ -3,11 +3,11 @@ package com.cc.flox.utils.beetl;
 import com.cc.flox.dataSource.PlaceHolderType;
 import org.beetl.core.Context;
 import org.beetl.core.statement.PlaceholderST;
-import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 自定义渲染器
@@ -29,7 +29,10 @@ public class CustomPlaceHolderRender implements PlaceholderST.Output {
 
     @Override
     public void write(Context ctx, Object o) throws IOException {
-        if (CollectionUtils.isEmpty(getParam())) {
+        if (Objects.isNull(o)) {
+            return;
+        }
+        if (Objects.isNull(getParam())) {
             reset();
         }
         PlaceHolderType placeHolderType = (PlaceHolderType) ctx.getGlobal(PLACE_HOLDER_TYPE_KEY);

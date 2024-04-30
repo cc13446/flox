@@ -29,8 +29,11 @@ class BeetlTemplateRenderExecutorTest extends Specification {
         }
 
         where:
-        sql                                                                                                                          | binding                   | res                                                              | param
-        """SELECT * FROM USER WHERE\n1=1\n@if(!isEmpty(name)){\nand `name`= #name#\n@}\n@if(!isEmpty(age)){\nand `age`= #age#\n@}""" | ["name": "cc", "age": 18] | """SELECT * FROM USER WHERE\n1=1\nand `name`= ?\nand `age`= ?\n""" | ["cc", 18]
+        sql                                                                                                                                            | binding                    | res                                                                        | param
+        """SELECT * FROM USER WHERE\n1=1\n@if(!isEmpty(name)){\nand `name` = #name#\n@}\n@if(!isEmpty(age)){\nand `age` = #age#\n@}"""                 | ["name": "cc", "age": 18]  | """SELECT * FROM USER WHERE\n1=1\nand `name` = ?\nand `age` = ?\n"""       | ["cc", 18]
+        """SELECT * FROM USER WHERE\n1=1\n@if(!isEmpty(name)){\nand `name` in ( #join(name)# )\n@}\n@if(!isEmpty(age)){\nand `age` = #str(age)#\n@}""" | ["name": "cc", "age": 18]  | """SELECT * FROM USER WHERE\n1=1\nand `name` in ( ? )\nand `age` = 18\n""" | ["cc"]
+        """SELECT * FROM USER WHERE\n1=1\n@if(!isEmpty(name)){\nand `name` in ( #join(name)# )\n@}"""                                                  | ["name": ["cc", "bb"]]     | """SELECT * FROM USER WHERE\n1=1\nand `name` in ( ?,? )\n"""               | ["cc", "bb"]
+        """SELECT * FROM USER WHERE\n1=1\n@if(!isEmpty(name)){\nand `name` in ( #join(name,",",false)# )\n@}"""                                        | ["name": ["'cc'", "'bb'"]] | """SELECT * FROM USER WHERE\n1=1\nand `name` in ( 'cc','bb' )\n"""         | []
 
     }
 }
