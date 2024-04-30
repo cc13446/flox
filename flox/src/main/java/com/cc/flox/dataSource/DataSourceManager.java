@@ -9,11 +9,6 @@ import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.HolderUtils;
 import com.cc.flox.utils.StreamUtils;
 import io.r2dbc.pool.ConnectionPool;
-import io.r2dbc.pool.ConnectionPoolConfiguration;
-import io.r2dbc.spi.ConnectionFactories;
-import io.r2dbc.spi.ConnectionFactory;
-import io.r2dbc.spi.ConnectionFactoryOptions;
-import io.r2dbc.spi.Option;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -85,7 +80,7 @@ public class DataSourceManager {
             if (Objects.isNull(oldPool)) {
                 return new DataSource(
                         key,
-                        new R2dbcEntityTemplate(new ConnectionPool(getConnectionPoolConfiguration(dataSourceConfig))),
+                        new R2dbcEntityTemplate(new ConnectionPool(dataSourceConfig.getConnectionPoolConfiguration())),
                         dataSourceConfig.action(),
                         dataSourceConfig.type());
             }
@@ -127,25 +122,5 @@ public class DataSourceManager {
             }));
         }
         return spec.getHolder().fetch().all().collectList();
-    }
-
-
-    /**
-     * @param dataSourceConfig 数据源配置
-     * @return 数据库连接池配置
-     */
-    private ConnectionPoolConfiguration getConnectionPoolConfiguration(DataSourceConfiguration dataSourceConfig) {
-        ConnectionFactoryOptions options = ConnectionFactoryOptions.builder()
-                .from(ConnectionFactoryOptions.parse(dataSourceConfig.url()))
-                .option(Option.valueOf(DataSourceConfiguration.USER), dataSourceConfig.username())
-                .option(Option.valueOf(DataSourceConfiguration.PASSWORD), dataSourceConfig.password())
-                .build();
-
-        ConnectionFactory factory = ConnectionFactories.get(options);
-        return ConnectionPoolConfiguration.builder(factory)
-                .initialSize(dataSourceConfig.initSize())
-                .maxSize(dataSourceConfig.maxSize())
-                .maxIdleTime(Duration.ofSeconds(dataSourceConfig.maxIdle()))
-                .build();
     }
 }

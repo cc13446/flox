@@ -1,21 +1,35 @@
 package com.cc.flox.initializer;
 
+import com.cc.flox.dataSource.DataSource;
+import com.cc.flox.dataSource.DataSourceConfiguration;
 import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.dataSource.DataSourceType;
+import com.cc.flox.dataSource.action.Action;
+import com.cc.flox.dataSource.template.TemplateType;
 import com.cc.flox.domain.loader.DataSourceLoader;
 import com.cc.flox.domain.node.NodeType;
+import com.cc.flox.domain.transformer.BiTransformer;
 import com.cc.flox.domain.transformer.Transformer;
+import com.cc.flox.meta.Constant;
 import com.cc.flox.meta.config.MetaDataSourceConfig;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
+import com.cc.flox.utils.GsonUtils;
+import com.google.gson.reflect.TypeToken;
+import io.r2dbc.pool.ConnectionPool;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -35,6 +49,8 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE = "meta_node_select_data_source";
 
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE_ACTION = "meta_node_select_data_source_action";
+
+    public static final String META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION = "meta_node_concat_data_source_and_action";
 
     /**
      * 默认数据源加载器
@@ -101,5 +117,46 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 HashMap.newHashMap(1))
         );
 
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION,
+                NodeType.BI_TRANSFORMER,
+                (BiTransformer<List<Map<String, Object>>, List<Map<String, Object>>, List<DataSource>>) (dataSource, action, attr) -> Mono.zip(dataSource, action).flatMap(t -> {
+                    List<Map<String, Object>> d = t.getT1();
+                    List<Map<String, Object>> a = t.getT2();
+                    Map<String, List<Action>> actionMap = a.stream()
+                            .filter(m -> Objects.nonNull(m.get(Constant.CODE)) && Objects.nonNull(m.get(Constant._DATA_SOURCE_CODE)) && Objects.nonNull(m.get(Constant.TYPE)) && Objects.nonNull(m.get(Constant.SQL)))
+                            .collect(Collectors.groupingBy(m -> m.get(Constant._DATA_SOURCE_CODE).toString(), Collectors.mapping(m -> new Action(
+                                    m.get(Constant.CODE).toString(),
+                                    AssertUtils.assertNonNull(TemplateType.fromCode(m.get(Constant.TYPE).toString()), "Unknown template type " + m.get(Constant.TYPE)),
+                                    m.get(Constant.SQL).toString()
+                            ), Collectors.toList())));
+
+                    List<DataSource> res = d.stream().filter(m -> Objects.nonNull(m.get(Constant.CODE)) && Objects.nonNull(m.get(Constant.TYPE)) && Objects.nonNull(m.get(Constant.URL)) && Objects.nonNull(m.get(Constant.USERNAME)) && Objects.nonNull(m.get(Constant.PASSWORD)) && Objects.nonNull(m.get(Constant.CONFIG)))
+                            .map(m -> {
+                                Map<String, Object> config = GsonUtils.INS.fromJson(m.get(Constant.CONFIG).toString(), new TypeToken<>() {
+                                });
+                                return new DataSourceConfiguration(
+                                        m.get(Constant.CODE).toString(),
+                                        m.get(Constant.URL).toString(),
+                                        m.get(Constant.USERNAME).toString(),
+                                        m.get(Constant.PASSWORD).toString(),
+                                        AssertUtils.assertNonNull(DataSourceType.fromCode(m.get(Constant.TYPE).toString()), "Unknown data source type" + m.get(Constant.TYPE)),
+                                        Integer.parseInt(config.getOrDefault(Constant.INIT_SIZE, DataSourceConfiguration.DEFAULT_INIT_SIZE).toString()),
+                                        Integer.parseInt(config.getOrDefault(Constant.MAX_SIZE, DataSourceConfiguration.DEFAULT_MAX_SIZE).toString()),
+                                        Integer.parseInt(config.getOrDefault(Constant.MAX_IDLE, DataSourceConfiguration.DEFAULT_MAX_IDLE).toString()),
+                                        actionMap.getOrDefault(m.get(Constant.CODE).toString(), List.of()).stream().collect(Collectors.toMap(Action::getCode, s -> s)));
+                            })
+                            .map(c -> new DataSource(
+                                    c.code(),
+                                    new R2dbcEntityTemplate(new ConnectionPool(c.getConnectionPoolConfiguration())),
+                                    c.action(),
+                                    c.type())).toList();
+                    return Mono.just(res);
+                }),
+                HashMap.newHashMap(1),
+                List.of(List.class, List.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
     }
 }
