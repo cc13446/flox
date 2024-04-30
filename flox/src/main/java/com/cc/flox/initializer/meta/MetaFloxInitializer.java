@@ -1,4 +1,4 @@
-package com.cc.flox.initializer;
+package com.cc.flox.initializer.meta;
 
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.api.endpoint.ApiEndPoint;
@@ -13,9 +13,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import static com.cc.flox.initializer.MetaRequestExtractorInitializer.*;
-import static com.cc.flox.initializer.MetaResponseLoaderInitializer.META_RESPONSE_LOADER_CODE_WRITE_JSON;
-import static com.cc.flox.initializer.MetaSubFloxInitializer.*;
+import static com.cc.flox.initializer.meta.MetaRequestExtractorInitializer.*;
+import static com.cc.flox.initializer.meta.MetaResponseLoaderInitializer.META_RESPONSE_LOADER_CODE_WRITE_JSON;
+import static com.cc.flox.initializer.meta.MetaSubFloxInitializer.*;
 
 
 /**
@@ -24,7 +24,7 @@ import static com.cc.flox.initializer.MetaSubFloxInitializer.*;
  * @author cc
  * @date 2024/4/2
  */
-@Order(5)
+@Order(6)
 @Component
 public class MetaFloxInitializer implements CommandLineRunner {
 

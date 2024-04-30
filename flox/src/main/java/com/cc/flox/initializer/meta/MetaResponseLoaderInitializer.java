@@ -1,4 +1,4 @@
-package com.cc.flox.initializer;
+package com.cc.flox.initializer.meta;
 
 import com.cc.flox.api.response.ApiResponseWrapper;
 import com.cc.flox.domain.loader.ResponseLoader;
@@ -25,7 +25,7 @@ import java.util.List;
  * @author cc
  * @date 2024/4/2
  */
-@Order(4)
+@Order(5)
 @Component
 public class MetaResponseLoaderInitializer implements CommandLineRunner {
 

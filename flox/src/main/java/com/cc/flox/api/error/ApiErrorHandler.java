@@ -10,7 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import static com.cc.flox.initializer.MetaResponseLoaderInitializer.META_RESPONSE_LOADER_CODE_WRITE_JSON;
+import static com.cc.flox.initializer.meta.MetaResponseLoaderInitializer.META_RESPONSE_LOADER_CODE_WRITE_JSON;
 
 /**
  * 全局错误处理

@@ -1,4 +1,4 @@
-package com.cc.flox.initializer;
+package com.cc.flox.initializer.meta;
 
 import com.cc.flox.dataSource.DataSource;
 import com.cc.flox.dataSource.DataSourceManager;
@@ -64,9 +64,6 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
             ds.getTemplate().getDatabaseClient().sql(sql).then().block();
             log.info("Success init table [{}]", table);
         }
-
-        // 启动数据源同步
-        dataSourceManager.startSynchronize();
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.cc.flox.initializer;
+package com.cc.flox.initializer.meta;
 
 import com.cc.flox.dataSource.DataSource;
 import com.cc.flox.dataSource.DataSourceConfiguration;
@@ -23,6 +23,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -146,6 +147,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
                             .map(m -> {
                                 Map<String, Object> config = GsonUtils.INS.fromJson(m.get(Constant.CONFIG).toString(), new TypeToken<>() {
                                 });
+                                if (CollectionUtils.isEmpty(config)) {
+                                    config = HashMap.newHashMap(0);
+                                }
                                 return new DataSourceConfiguration(
                                         m.get(Constant.CODE).toString(),
                                         m.get(Constant.URL).toString(),

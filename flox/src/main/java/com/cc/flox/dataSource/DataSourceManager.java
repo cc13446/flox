@@ -4,6 +4,7 @@ import com.cc.flox.dataSource.action.Action;
 import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
 import com.cc.flox.executor.ExecutorInvoker;
+import com.cc.flox.meta.Constant;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.HolderUtils;
@@ -15,7 +16,6 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.cc.flox.initializer.meta.MetaSubFloxInitializer.META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION;
 
 /**
  * 数据源管理者
@@ -56,10 +58,21 @@ public class DataSourceManager {
      */
     public void startSynchronize() {
         if (hasStart.compareAndSet(false, true)) {
-            Flux.interval(Duration.ofSeconds(10)).subscribe(l -> {
-                log.info("Start synchronize data source, count {}", l);
-            });
+            doSynchronize(0);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void doSynchronize(long count) {
+        log.info("Start synchronize data source, count {}", count);
+        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true"))).subscribe(l -> {
+           try{
+               List<DataSource> dataSourceList = (List<DataSource>) l;
+           } finally {
+               Mono.delay(Duration.ofSeconds(10)).subscribe(this::doSynchronize);
+           }
+        });
+        log.info("Done synchronize data source");
     }
 
     /**

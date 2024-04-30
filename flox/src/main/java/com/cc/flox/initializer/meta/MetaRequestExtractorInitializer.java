@@ -1,4 +1,4 @@
-package com.cc.flox.initializer;
+package com.cc.flox.initializer.meta;
 
 import com.cc.flox.domain.extractor.RequestExtractor;
 import com.cc.flox.domain.node.NodeType;
