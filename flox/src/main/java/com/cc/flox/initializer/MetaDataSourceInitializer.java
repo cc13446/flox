@@ -65,6 +65,8 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
             log.info("Success init table [{}]", table);
         }
 
+        // 启动数据源同步
+        dataSourceManager.startSynchronize();
     }
 
     /**

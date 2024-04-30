@@ -4,6 +4,7 @@ import com.cc.flox.dataSource.action.Action;
 import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
 import com.cc.flox.executor.ExecutorInvoker;
+import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.HolderUtils;
 import com.cc.flox.utils.StreamUtils;
@@ -14,10 +15,12 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.Option;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 数据源管理者
@@ -32,16 +36,36 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author cc
  * @date 2024/4/4
  */
+@Slf4j
 @Component
 public class DataSourceManager {
 
-    @Resource
-    private ExecutorInvoker invoker;
+    /**
+     * 是否启动
+     */
+    private final AtomicBoolean hasStart = new AtomicBoolean(false);
 
     /**
      * 数据源 Map
      */
     private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
+
+    @Resource
+    private ExecutorInvoker invoker;
+
+    @Resource
+    private NodeManager nodeManager;
+
+    /**
+     * 开始同步数据源
+     */
+    public void startSynchronize() {
+        if (hasStart.compareAndSet(false, true)) {
+            Flux.interval(Duration.ofSeconds(10)).subscribe(l -> {
+                log.info("Start synchronize data source, count {}", l);
+            });
+        }
+    }
 
     /**
      * @param code code
@@ -77,7 +101,8 @@ public class DataSourceManager {
      * @param param          参数
      * @return 结果
      */
-    public Mono<List<Map<String, Object>>> exec(String dataSourceCode, String actionCode, Map<String, Object> param) {
+    public Mono<List<Map<String, Object>>> exec(String dataSourceCode, String
+            actionCode, Map<String, Object> param) {
         DataSource dataSource = this.dataSources.get(dataSourceCode);
         AssertUtils.assertNonNull(dataSourceCode, "Exec data source action error, unknown data source : " + dataSourceCode);
 

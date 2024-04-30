@@ -9,6 +9,7 @@ import com.cc.flox.meta.entity.FloxEntity;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.utils.AssertUtils;
 import jakarta.annotation.Resource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -82,6 +83,7 @@ public class NodeManager {
     private ApiManager apiManager;
 
     @Resource
+    @Lazy
     private DataSourceManager dataSourceManager;
 
     /**
