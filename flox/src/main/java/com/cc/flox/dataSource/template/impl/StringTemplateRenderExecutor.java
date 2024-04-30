@@ -1,15 +1,17 @@
 package com.cc.flox.dataSource.template.impl;
 
-import com.cc.flox.dataSource.template.TemplateType;
 import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
+import com.cc.flox.dataSource.template.TemplateType;
 import org.springframework.stereotype.Component;
 import org.stringtemplate.v4.AttributeRenderer;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupString;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -40,11 +42,10 @@ public class StringTemplateRenderExecutor implements TemplateRenderExecutor {
         STGroup sql = new STGroupString(context.getAction().getSql());
         AtomicInteger index = new AtomicInteger(1);
         context.setRenderedParam(new LinkedList<>());
-        context.setUseQuestionMark(false);
         // 自定义属性渲染器
         AttributeRenderer attributeRenderer = (o, format, locale) -> {
             if ("p".equals(format)) {
-                String key = "$" + index.getAndIncrement();
+                String key = context.getDataSourceType().getPlaceHolderType().getPlaceHolderFunc().apply(index.getAndIncrement());
                 context.getRenderedParam().add(o);
                 return key;
             }

@@ -32,9 +32,8 @@ public class MybatisTemplateRenderExecutor implements TemplateRenderExecutor {
     @Override
     public TemplateRenderContext invoke(TemplateRenderContext context) {
         Template template = templateBuilder.getTemplate(context.getAction().getSql());
-        TemplateContext res = template.process(context.getParam());
+        TemplateContext res = template.process(context.getParam(), (i, o) -> context.getDataSourceType().getPlaceHolderType().getPlaceHolderFunc().apply(i));
         context.setRenderedSQL(res.getResult());
-        context.setUseQuestionMark(false);
         context.setRenderedParam(res.getParameter());
         return context;
     }

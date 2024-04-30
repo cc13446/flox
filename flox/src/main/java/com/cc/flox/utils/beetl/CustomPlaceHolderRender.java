@@ -1,5 +1,6 @@
 package com.cc.flox.utils.beetl;
 
+import com.cc.flox.dataSource.PlaceHolderType;
 import org.beetl.core.Context;
 import org.beetl.core.statement.PlaceholderST;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +18,11 @@ import java.util.List;
 public class CustomPlaceHolderRender implements PlaceholderST.Output {
 
     /**
+     * 占位符类型
+     */
+    public final static String PLACE_HOLDER_TYPE_KEY = "placeHolder_type";
+
+    /**
      * 参数
      */
     private final static ThreadLocal<List<Object>> PARAM = new ThreadLocal<>();
@@ -26,8 +32,9 @@ public class CustomPlaceHolderRender implements PlaceholderST.Output {
         if (CollectionUtils.isEmpty(getParam())) {
             reset();
         }
-        ctx.byteWriter.writeString("?");
+        PlaceHolderType placeHolderType = (PlaceHolderType) ctx.getGlobal(PLACE_HOLDER_TYPE_KEY);
         getParam().add(o);
+        ctx.byteWriter.writeString(placeHolderType.getPlaceHolderFunc().apply(getParam().size()));
     }
 
     /**

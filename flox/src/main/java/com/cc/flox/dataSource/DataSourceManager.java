@@ -62,7 +62,8 @@ public class DataSourceManager {
                 return new DataSource(
                         key,
                         new R2dbcEntityTemplate(new ConnectionPool(getConnectionPoolConfiguration(dataSourceConfig))),
-                        dataSourceConfig.action());
+                        dataSourceConfig.action(),
+                        dataSourceConfig.type());
             }
             throw new RuntimeException("Insert dataSource fail : existed");
         });
@@ -83,19 +84,20 @@ public class DataSourceManager {
         Action action = dataSource.getActions().get(actionCode);
         AssertUtils.assertNonNull(action, "Exec data source action error, unknown data source action: " + actionCode);
 
-        TemplateRenderContext context = new TemplateRenderContext(action, param);
+        TemplateRenderContext context = new TemplateRenderContext(action, param, dataSource.getDataSourceType());
         context = invoker.invoke(TemplateRenderExecutor.class, context);
 
         HolderUtils<DatabaseClient.GenericExecuteSpec> spec = new HolderUtils<>(dataSource.getTemplate().getDatabaseClient().sql(context.getRenderedSQL()));
         if (context.isCustomBind()) {
             spec.setHolder(spec.getHolder().bindValues(context.getCustomBindParam()));
         } else if (!CollectionUtils.isEmpty(context.getRenderedParam())) {
-            boolean useQuestionMark = context.isUseQuestionMark();
             context.getRenderedParam().forEach(StreamUtils.withCounter((i, o) -> {
-                if (useQuestionMark) {
+                if (PlaceHolderType.QUESTION_MARK.equals(dataSource.getDataSourceType().getPlaceHolderType())) {
                     spec.setHolder(spec.getHolder().bind(i, o));
-                } else {
+                } else if (PlaceHolderType.DOLLAR.equals(dataSource.getDataSourceType().getPlaceHolderType())) {
                     spec.setHolder(spec.getHolder().bind("$" + (i + 1), o));
+                } else {
+                    throw new RuntimeException("Unknown data source place holder type " + dataSource.getDataSourceType().getPlaceHolderType());
                 }
             }));
         }

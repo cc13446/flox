@@ -29,13 +29,14 @@ public class Template {
     }
 
     /**
-     * @param data 数据
+     * @param data         数据
+     * @param customRender 自定义渲染器
      * @return 渲染结果
      */
-    public TemplateContext process(Map<String, Object> data) {
+    public TemplateContext process(Map<String, Object> data, CustomRender customRender) {
         TemplateContext context = new TemplateContext(data);
         calculate(context);
-        parseParameter(context);
+        parseParameter(context, customRender);
         return context;
     }
 
@@ -51,9 +52,10 @@ public class Template {
     /**
      * 处理所有的#占位符，包括用户设置和计算时生成的
      *
-     * @param context 上下文
+     * @param context      上下文
+     * @param customRender 自定义渲染器
      */
-    private void parseParameter(TemplateContext context) {
+    private void parseParameter(TemplateContext context, CustomRender customRender) {
         AtomicInteger index = new AtomicInteger(1);
         PlaceHolderParser parser = new PlaceHolderParser(OPEN_TOKEN, CLOSE_TOKEN, (p) -> {
             Object v = OgnlUtils.parseExpression(p, context.getBinding());
@@ -61,7 +63,7 @@ public class Template {
                 throw new RuntimeException("Ognl cannot parse +[" + p + "] value");
             }
             context.addParameter(v);
-            return "$" + index.getAndIncrement();
+            return customRender.render(index.getAndIncrement(), v);
         });
         context.setResult(parser.parse(context.getResult()));
     }

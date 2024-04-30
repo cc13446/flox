@@ -31,4 +31,9 @@ public class DataSource {
      * 数据库动作
      */
     private final Map<String, Action> actions;
+
+    /**
+     * 数据源类型
+     */
+    private final DataSourceType dataSourceType;
 }

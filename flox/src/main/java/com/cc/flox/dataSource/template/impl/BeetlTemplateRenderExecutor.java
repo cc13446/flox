@@ -33,10 +33,10 @@ public class BeetlTemplateRenderExecutor implements TemplateRenderExecutor {
         holderRender.reset();
         Template template = groupTemplate.getTemplate(context.getAction().getSql());
         template.binding(context.getParam());
+        template.getCtx().set(CustomPlaceHolderRender.PLACE_HOLDER_TYPE_KEY, context.getDataSourceType().getPlaceHolderType());
         context.setRenderedSQL(template.render());
-        context.setUseQuestionMark(true);
         context.setRenderedParam(holderRender.getParam());
-        return null;
+        return context;
     }
 
     @Override

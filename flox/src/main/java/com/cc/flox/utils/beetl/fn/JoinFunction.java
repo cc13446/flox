@@ -39,16 +39,30 @@ public class JoinFunction implements Function {
     }
 
     /**
+     * @param o           value
+     * @param placeHolder 是否为sql占位符
+     * @param ctx         上下文
+     * @throws IOException exception
+     */
+    private static void output(Object o, boolean placeHolder, Context ctx) throws IOException {
+        if (placeHolder) {
+            PlaceholderST.output.write(ctx, o);
+        } else {
+            ctx.byteWriter.writeString(o.toString());
+        }
+    }
+
+    /**
      * @param it      可迭代数组
      * @param joinStr join字符串
      */
-    private static void join(ILoopStatus it, String joinStr, Context ctx) throws IOException {
+    private static void join(ILoopStatus it, String joinStr, boolean placeHolder, Context ctx) throws IOException {
         while (it.hasNext()) {
             Object o = it.next();
             if (!it.isFirst()) {
-                ctx.byteWriter.writeString(joinStr);
+                output(joinStr, false, ctx);
             }
-            PlaceholderST.output.write(ctx, o);
+            output(o, placeHolder, ctx);
         }
     }
 
@@ -59,21 +73,27 @@ public class JoinFunction implements Function {
             if (Objects.isNull(temp)) {
                 return null;
             }
+            String joinStr = ",";
+            if (paras.length >= 2) {
+                joinStr = (String) paras[1];
+            }
+
+            boolean placeHolder = true;
+            if (paras.length >= 3) {
+                placeHolder = Boolean.parseBoolean(paras[2].toString());
+            }
+
             // 参数为单值 &&
             // 参数不是字符串 || 参数是字符串不包含分隔符
             if (isSingle(temp) && !isStringWithSplit(temp)) {
-                PlaceholderST.output.write(ctx, temp);
+                output(temp, placeHolder, ctx);
                 return null;
             }
             if (isStringWithSplit(temp)) {
                 temp = Arrays.stream(((String) temp).split(SINGLE_SPLIT)).filter(StringUtils::isNotBlank).collect(Collectors.toList());
             }
             ILoopStatus it = GeneralLoopStatus.getIteratorStatus(temp);
-            String joinStr = ",";
-            if (paras.length == 2) {
-                joinStr = (String) paras[1];
-            }
-            join(it, joinStr, ctx);
+            join(it, joinStr, placeHolder, ctx);
         } catch (Exception e) {
             throw new RuntimeException("Beetl join error : ", e);
         }
