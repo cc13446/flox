@@ -27,12 +27,12 @@ public class NodeManager {
     /**
      * meta request extractor map
      */
-    private final Map<String, NodeEntity> requestExtractorMap = new ConcurrentHashMap<>();
+    private final Map<String, NodeEntity> metaRequestExtractorMap = new ConcurrentHashMap<>();
 
     /**
      * meta response loader map
      */
-    private final Map<String, NodeEntity> responseLoaderMap = new ConcurrentHashMap<>();
+    private final Map<String, NodeEntity> metaResponseLoaderMap = new ConcurrentHashMap<>();
 
     /**
      * meta node map
@@ -43,6 +43,26 @@ public class NodeManager {
      * meta sub flox map
      */
     private final Map<String, NodeEntity> metaSubFloxMap = HashMap.newHashMap(10);
+
+    /**
+     * request extractor map
+     */
+    private volatile Map<String, NodeEntity> requestExtractorMap = Collections.emptyMap();
+
+    /**
+     * request extractor related flox
+     */
+    private volatile Map<String, List<String>> requestExtractorRelatedFlox = Collections.emptyMap();
+
+    /**
+     * response loader map
+     */
+    private volatile Map<String, NodeEntity> responseLoaderMap = Collections.emptyMap();
+
+    /**
+     * response loader related flox
+     */
+    private volatile Map<String, List<String>> responseLoaderRelatedFlox = Collections.emptyMap();
 
     /**
      * node map
@@ -141,7 +161,7 @@ public class NodeManager {
      */
     public void putRequestExtract(NodeEntity nodeEntity) {
         AssertUtils.assertTrue(nodeEntity.nodeType() == NodeType.REQUEST_EXTRACTOR, "Must put type " + NodeType.REQUEST_EXTRACTOR.getCode());
-        this.requestExtractorMap.put(nodeEntity.nodeCode(), nodeEntity);
+        this.metaRequestExtractorMap.put(nodeEntity.nodeCode(), nodeEntity);
     }
 
     /**
@@ -149,7 +169,7 @@ public class NodeManager {
      * @return requestExtractor
      */
     public NodeEntity getRequestExtract(String code) {
-        return this.requestExtractorMap.get(code);
+        return this.metaRequestExtractorMap.get(code);
     }
 
     /**
@@ -157,7 +177,7 @@ public class NodeManager {
      */
     public void putResponseLoader(NodeEntity nodeEntity) {
         AssertUtils.assertTrue(nodeEntity.nodeType() == NodeType.RESPONSE_LOADER, "Must put type " + NodeType.RESPONSE_LOADER.getCode());
-        this.responseLoaderMap.put(nodeEntity.nodeCode(), nodeEntity);
+        this.metaResponseLoaderMap.put(nodeEntity.nodeCode(), nodeEntity);
     }
 
     /**
@@ -165,6 +185,6 @@ public class NodeManager {
      * @return ResponseLoader
      */
     public NodeEntity getResponseLoader(String code) {
-        return this.responseLoaderMap.get(code);
+        return this.metaResponseLoaderMap.get(code);
     }
 }

@@ -1,8 +1,5 @@
 package com.cc.flox.meta.entity;
 
-import com.cc.flox.domain.extractor.RequestExtractor;
-import com.cc.flox.domain.loader.ResponseLoader;
-
 /**
  * 流程
  *
@@ -10,9 +7,9 @@ import com.cc.flox.domain.loader.ResponseLoader;
  * @date 2024/4/27
  */
 public record FloxEntity(
-        RequestExtractor<Object> requestExtractor,
+        NodeEntity requestExtractor,
 
-        String subFloxCode,
+        NodeEntity subFloxCode,
 
-        ResponseLoader<Object> responseLoader) {
+        NodeEntity responseLoader) {
 }
