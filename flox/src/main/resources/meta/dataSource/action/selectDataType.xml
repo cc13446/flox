@@ -10,4 +10,5 @@
             and update_time > CAST(#{updateTime} AS TIMESTAMPTZ)
         </if>
     </where>
+    order by update_time
 </root>

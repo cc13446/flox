@@ -1,5 +1,7 @@
 package com.cc.flox.utils;
 
+import com.cc.flox.dataType.DataTypeClassLoader;
+
 import javax.tools.*;
 import java.io.*;
 import java.net.URI;
@@ -53,14 +55,29 @@ public class JavaCodeUtils {
      * @return class 字节码
      */
     public static byte[] codeToClass(String code) {
+        String classPath = new File(".cache").getAbsolutePath() + "/";
+        File cacheDir = new File(classPath + DataTypeClassLoader.DATA_TYPE_PACKAGE_NAME.replaceAll("\\.", "/"));
+        String cachePath = cacheDir.getAbsolutePath() + "/";
+        if (cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.delete()) {
+            throw new RuntimeException("Delete [" + cachePath + "] fail");
+        }
+        if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+            throw new RuntimeException("Mkdir [" + cachePath + "] fail");
+        }
+
         String className = getClassNameFromCode(code);
         JavaFileObject stringObject = new JavaSourceCodeFromString(className, code);
         try (StandardJavaFileManager fileManager = COMPILER.getStandardFileManager(null, null, StandardCharsets.UTF_8)) {
-            JavaCompiler.CompilationTask task = COMPILER.getTask(null, fileManager, null, List.of("-Xlint:none"), null, Collections.singletonList(stringObject));
+            JavaCompiler.CompilationTask task = COMPILER.getTask(null, fileManager, null, List.of("-Xlint:none", "-classpath", classPath + ":" + System.getProperty("java.class.path")), null, Collections.singletonList(stringObject));
             if (task.call()) {
                 JavaFileObject file = fileManager.getJavaFileForOutput(StandardLocation.CLASS_OUTPUT, className, JavaFileObject.Kind.CLASS, null);
-                try (InputStream inputStream = file.openInputStream()) {
-                    return inputStream.readAllBytes();
+                String classFilePath = cachePath + className + ".class";
+                try (InputStream inputStream = file.openInputStream();
+                     FileOutputStream classFileOutputStream = new FileOutputStream(classFilePath)) {
+                    byte[] res = inputStream.readAllBytes();
+                    classFileOutputStream.write(res);
+                    return res;
+
                 } finally {
                     file.delete();
                 }
