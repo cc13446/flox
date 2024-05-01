@@ -52,7 +52,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_DATA_SOURCE = "meta_node_update_data_source";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE = "meta_node_select_data_source";
 
+    public static final String META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE = "meta_node_trans_data_source_code_to_code";
     public static final String META_NODE_CODE_INSERT_DATA_SOURCE_ACTION = "meta_node_insert_data_source_action";
+    public static final String META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION = "meta_node_update_data_source_action";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE_ACTION = "meta_node_select_data_source_action";
 
     public static final String META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION = "meta_node_concat_data_source_and_action";
@@ -123,11 +125,29 @@ public class MetaNodeInitializer implements CommandLineRunner {
         );
 
         nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE,
+                NodeType.BI_TRANSFORMER,
+                (BiTransformer<Map<String, Object>, Object, Map<String, Object>>) (source, o, a) -> source.flatMap(s -> Mono.just(Map.of(Constant.CODE, s.get(Constant.DATA_SOURCE_CODE)))),
+                List.of(Map.class, Object.class),
+                Map.class)
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_INSERT_DATA_SOURCE_ACTION,
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSourceAction"),
                 List.of(List.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION,
+                NodeType.DATA_SOURCE_LOADER,
+                DATA_SOURCE_LOADER,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSourceAction"),
+                List.of(Map.class, DataSourceManager.class),
                 List.class,
                 HashMap.newHashMap(1))
         );

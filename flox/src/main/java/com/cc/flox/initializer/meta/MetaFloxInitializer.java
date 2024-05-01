@@ -41,6 +41,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
         apiManager.insertHandler(getUpdateDataSourceEndPoint()).get();
         apiManager.insertHandler(getSelectDataSourceEndPoint()).get();
         apiManager.insertHandler(getInsertDataSourceActionEndPoint()).get();
+        apiManager.insertHandler(getUpdateDataSourceActionEndPoint()).get();
         apiManager.insertHandler(getSelectDataSourceActionEndPoint()).get();
     }
 
@@ -97,6 +98,17 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE_ACTION))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
         return new ApiEndPoint("/data-source/action/insert", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return update data source action end point
+     */
+    private ApiEndPoint getUpdateDataSourceActionEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE_ACTION))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/data-source/action/update", ApiMethod.POST, builder.builder());
     }
 
     /**

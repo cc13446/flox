@@ -153,17 +153,25 @@ public class DefaultSubFlox implements SubFlox {
 
         // 检查无环
         String root = rootList.getFirst();
-        Set<String> red = HashSet.newHashSet(preNodeMap.size());
-        Set<String> green = HashSet.newHashSet(preNodeMap.size());
-        green.add(root);
-        while (!CollectionUtils.isEmpty(green)) {
-            Set<String> temp = HashSet.newHashSet(preNodeMap.size());
-            for (String node : green) {
-                temp.addAll(preNodeMap.getOrDefault(node, new ArrayList<>()));
+        List<String> path = new LinkedList<>();
+        dfs(root, path, preNodeMap);
+
+    }
+
+    /**
+     * @param root       root
+     * @param path       路径
+     * @param preNodeMap 映射关系
+     */
+    private void dfs(String root, List<String> path, Map<String, List<String>> preNodeMap) {
+        AssertUtils.assertTrue(!path.contains(root), "SubFlox has circle");
+        path.add(root);
+        List<String> next = preNodeMap.get(root);
+        if (!CollectionUtils.isEmpty(next)) {
+            for (String n : next) {
+                dfs(n, path, preNodeMap);
             }
-            red.addAll(green);
-            green = temp;
-            AssertUtils.assertTrue(!red.removeAll(green), "SubFlox has circle");
         }
+        path.removeLast();
     }
 }

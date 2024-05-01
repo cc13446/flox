@@ -1,32 +1,22 @@
 <?xml version = "1.0" ?>
 <!DOCTYPE root SYSTEM "script.dtd">
 <root>
-    update data_source
+    update data_source_action
     <set>
-        code = code,
         <if test="type != null">
             type = #{type},
         </if>
-        <if test="url != null">
-            url = #{url},
-        </if>
-        <if test="username != null">
-            username = #{username},
-        </if>
-        <if test="password != null">
-            password = #{password},
+        <if test="sql != null">
+            sql = #{sql},
         </if>
         <if test="status != null">
             status = CAST(#{status} AS BOOLEAN),
-        </if>
-        <if test="config != null">
-            config = #{config},
         </if>
         <if test="attribute != null">
             attribute = #{attribute},
         </if>
     </set>
     <where>
-        code = #{code}
+        code = #{code} and data_source_code = #{dataSourceCode}
     </where>
 </root>
