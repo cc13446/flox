@@ -103,7 +103,8 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 META_SUB_FLOX_CODE_INSERT_DATA_TYPE,
                 List.of(List.class),
                 List.class,
-                Map.of(META_NODE_CODE_INSERT_DATA_TYPE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                Map.of(META_NODE_CODE_INSERT_DATA_TYPE_TRANSFORMER, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
+                        META_NODE_CODE_INSERT_DATA_TYPE, List.of(META_NODE_CODE_INSERT_DATA_TYPE_TRANSFORMER, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
         nodeManager.putMetaSubFlox(

@@ -17,6 +17,7 @@ import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.GsonUtils;
+import com.cc.flox.utils.JavaCodeUtils;
 import com.google.gson.reflect.TypeToken;
 import io.r2dbc.pool.ConnectionPool;
 import jakarta.annotation.Resource;
@@ -57,6 +58,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION = "meta_node_update_data_source_action";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE_ACTION = "meta_node_select_data_source_action";
 
+    public static final String META_NODE_CODE_INSERT_DATA_TYPE_TRANSFORMER = "meta_node_insert_data_type_transformer";
     public static final String META_NODE_CODE_INSERT_DATA_TYPE = "meta_node_insert_data_type";
     public static final String META_NODE_CODE_SELECT_DATA_TYPE = "meta_node_select_data_type";
 
@@ -161,6 +163,31 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 DATA_SOURCE_LOADER,
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSourceAction"),
                 List.of(Map.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_INSERT_DATA_TYPE_TRANSFORMER,
+                NodeType.TRANSFORMER,
+                (Transformer<List<Map<String, Object>>, List<Map<String, Object>>>) (l, a) -> l.flatMap(list -> Mono.just(list.stream().peek(m -> {
+                    AssertUtils.assertNonBlank((String) m.get(Constant.CODE), "Data type code cannot be blank");
+                    AssertUtils.assertNonBlank((String) m.get(Constant.CONTENT), "Data type content cannot be blank");
+                    String code = m.get(Constant.CONTENT).toString();
+                    String expectPackage = "com.cc.flox.data.type";
+                    String packageName = JavaCodeUtils.getPackageNameFromCode(code);
+                    AssertUtils.assertTrue(expectPackage.equals(packageName), "The package name of data type content is fixed(" + expectPackage + ")");
+                    String dataTypeCode = m.get(Constant.CODE).toString();
+                    String expectClassName = dataTypeCode.substring(0, 1).toUpperCase() + dataTypeCode.substring(1);
+                    String path = expectPackage + "." + expectClassName;
+                    m.put(Constant.PATH, path);
+                    String className = JavaCodeUtils.getClassNameFromCode(m.get(Constant.CONTENT).toString());
+                    AssertUtils.assertNonBlank(className, "Cannot find data type class name");
+                    AssertUtils.assertTrue(expectClassName.equals(className), "Class name should equals code (first char upper)");
+                    byte[] bytes = JavaCodeUtils.codeToClass(code);
+                    AssertUtils.assertTrue(Objects.nonNull(bytes) && bytes.length != 0, "Content cannot be compile");
+                }).toList())),
+                HashMap.newHashMap(1),
+                List.of(List.class),
                 List.class,
                 HashMap.newHashMap(1))
         );

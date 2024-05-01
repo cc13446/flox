@@ -74,6 +74,9 @@ public class DataSourceManager {
         }
     }
 
+    /**
+     * 同步数据源
+     */
     private void doSynchronize() {
         log.info("Start synchronize data source, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
         nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true", Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {

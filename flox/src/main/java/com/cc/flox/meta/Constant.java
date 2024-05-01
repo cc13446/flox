@@ -29,5 +29,6 @@ public class Constant {
     public static final String MAX_SIZE = "maxSize";
     public static final String MAX_IDLE = "maxIdle";
 
-
+    public static final String CONTENT = "content";
+    public static final String PATH = "path";
 }
