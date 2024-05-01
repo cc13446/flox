@@ -19,14 +19,15 @@ public class Constant {
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
 
+    public static final String _UPDATE_TIME = "update_time";
+    public static final String UPDATE_TIME = "updateTime";
+
     public static final String _DATA_SOURCE_CODE = "data_source_code";
     public static final String DATA_SOURCE_CODE = "dataSourceCode";
 
-    public static final String _INIT_SIZE = "init_size";
     public static final String INIT_SIZE = "initSize";
-    public static final String _MAX_SIZE = "max_size";
     public static final String MAX_SIZE = "maxSize";
-    public static final String _MAX_IDLE = "max_idle";
     public static final String MAX_IDLE = "maxIdle";
+
 
 }

@@ -12,6 +12,7 @@ import com.cc.flox.domain.transformer.BiTransformer;
 import com.cc.flox.domain.transformer.Transformer;
 import com.cc.flox.meta.Constant;
 import com.cc.flox.meta.config.MetaDataSourceConfig;
+import com.cc.flox.meta.entity.DataSourcesEntity;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP = "meta_node_multi_value_map_to_map";
 
     public static final String META_NODE_CODE_INSERT_DATA_SOURCE = "meta_node_insert_data_source";
+    public static final String META_NODE_CODE_UPDATE_DATA_SOURCE = "meta_node_update_data_source";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE = "meta_node_select_data_source";
 
     public static final String META_NODE_CODE_INSERT_DATA_SOURCE_ACTION = "meta_node_insert_data_source_action";
@@ -100,6 +103,16 @@ public class MetaNodeInitializer implements CommandLineRunner {
         );
 
         nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_UPDATE_DATA_SOURCE,
+                NodeType.DATA_SOURCE_LOADER,
+                DATA_SOURCE_LOADER,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSource"),
+                List.of(Map.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_SELECT_DATA_SOURCE,
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
@@ -132,9 +145,14 @@ public class MetaNodeInitializer implements CommandLineRunner {
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION,
                 NodeType.BI_TRANSFORMER,
-                (BiTransformer<List<Map<String, Object>>, List<Map<String, Object>>, List<DataSource>>) (dataSource, action, attr) -> Mono.zip(dataSource, action).flatMap(t -> {
+                (BiTransformer<List<Map<String, Object>>, List<Map<String, Object>>, DataSourcesEntity>) (dataSource, action, attr) -> Mono.zip(dataSource, action).flatMap(t -> {
                     List<Map<String, Object>> d = t.getT1();
                     List<Map<String, Object>> a = t.getT2();
+                    if (CollectionUtils.isEmpty(d)) {
+                        return Mono.just(new DataSourcesEntity(List.of(), null));
+                    }
+                    OffsetDateTime dataSourceUpdateTime = d.stream().filter(m -> Objects.nonNull(m.get(Constant._UPDATE_TIME))).map(m -> (OffsetDateTime) m.get(Constant._UPDATE_TIME)).max(OffsetDateTime::compareTo).orElse(OffsetDateTime.MIN);
+                    OffsetDateTime actionSourceUpdateTime = a.stream().filter(m -> Objects.nonNull(m.get(Constant._UPDATE_TIME))).map(m -> (OffsetDateTime) m.get(Constant._UPDATE_TIME)).max(OffsetDateTime::compareTo).orElse(OffsetDateTime.MIN);
                     Map<String, List<Action>> actionMap = a.stream()
                             .filter(m -> Objects.nonNull(m.get(Constant.CODE)) && Objects.nonNull(m.get(Constant._DATA_SOURCE_CODE)) && Objects.nonNull(m.get(Constant.TYPE)) && Objects.nonNull(m.get(Constant.SQL)))
                             .collect(Collectors.groupingBy(m -> m.get(Constant._DATA_SOURCE_CODE).toString(), Collectors.mapping(m -> new Action(
@@ -166,11 +184,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
                                     new R2dbcEntityTemplate(new ConnectionPool(c.getConnectionPoolConfiguration())),
                                     c.action(),
                                     c.type())).toList();
-                    return Mono.just(res);
+                    return Mono.just(new DataSourcesEntity(res, dataSourceUpdateTime.isAfter(actionSourceUpdateTime) ? dataSourceUpdateTime : actionSourceUpdateTime));
                 }),
                 HashMap.newHashMap(1),
                 List.of(List.class, List.class),
-                List.class,
+                DataSourcesEntity.class,
                 HashMap.newHashMap(1))
         );
     }

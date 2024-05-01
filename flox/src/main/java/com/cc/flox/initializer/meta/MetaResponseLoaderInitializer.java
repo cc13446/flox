@@ -42,7 +42,10 @@ public class MetaResponseLoaderInitializer implements CommandLineRunner {
                 (ResponseLoader<Object>) (source, destination, attribute) -> Mono.zip(source, destination).publishOn(Schedulers.boundedElastic()).handle((t, sink) -> {
                     ServerHttpResponse response = t.getT2();
                     response.setStatusCode(HttpStatus.OK);
-                    String res = GsonUtils.INS.toJson(ApiResponseWrapper.success(t.getT1()));
+                    if (!ApiResponseWrapper.class.isAssignableFrom(t.getT1().getClass())) {
+                        t = t.mapT1(ApiResponseWrapper::success);
+                    }
+                    String res = GsonUtils.INS.toJson(t.getT1());
                     response.writeWith(Mono.just(response.bufferFactory().wrap(res.getBytes(StandardCharsets.UTF_8)))).block();
                     sink.complete();
                 }),

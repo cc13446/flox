@@ -38,6 +38,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         apiManager.insertHandler(getEchoEndPoint()).get();
         apiManager.insertHandler(getInsertDataSourceEndPoint()).get();
+        apiManager.insertHandler(getUpdateDataSourceEndPoint()).get();
         apiManager.insertHandler(getSelectDataSourceEndPoint()).get();
         apiManager.insertHandler(getInsertDataSourceActionEndPoint()).get();
         apiManager.insertHandler(getSelectDataSourceActionEndPoint()).get();
@@ -63,6 +64,17 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
         return new ApiEndPoint("/data-source/insert", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return update data source end point
+     */
+    private ApiEndPoint getUpdateDataSourceEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/data-source/update", ApiMethod.POST, builder.builder());
     }
 
     /**

@@ -5,6 +5,7 @@ import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
 import com.cc.flox.executor.ExecutorInvoker;
 import com.cc.flox.meta.Constant;
+import com.cc.flox.meta.entity.DataSourcesEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.HolderUtils;
@@ -19,11 +20,14 @@ import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.cc.flox.initializer.meta.MetaSubFloxInitializer.META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION;
+import static com.cc.flox.utils.FormatUtils.YYYY_MM_DD_HH_MM_SS;
 
 /**
  * 数据源管理者
@@ -39,6 +43,11 @@ public class DataSourceManager {
      * 是否启动
      */
     private final AtomicBoolean hasStart = new AtomicBoolean(false);
+
+    /**
+     * 更新时间
+     */
+    private final AtomicReference<OffsetDateTime> updateTime = new AtomicReference<>(OffsetDateTime.MIN);
 
     /**
      * 元数据源 Map
@@ -61,25 +70,25 @@ public class DataSourceManager {
      */
     public void startSynchronize() {
         if (hasStart.compareAndSet(false, true)) {
-            doSynchronize(0);
+            doSynchronize();
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void doSynchronize(long count) {
-        log.info("Start synchronize data source, count {}", count);
-        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true"))).subscribe(l -> {
+    private void doSynchronize() {
+        log.info("Start synchronize data source, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
+        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true", Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
             try {
-                List<DataSource> dataSourceList = (List<DataSource>) l;
-                Map<String, DataSource> map = HashMap.newHashMap(dataSourceList.size());
-                for (DataSource d : dataSourceList) {
+                DataSourcesEntity dataSources = (DataSourcesEntity) l;
+                Map<String, DataSource> map = new HashMap<>(this.dataSources);
+                for (DataSource d : dataSources.dataSources()) {
                     map.put(d.getCode(), d);
                 }
                 this.dataSources = Collections.unmodifiableMap(map);
+                this.updateTime.updateAndGet(t -> Optional.ofNullable(dataSources.updateTime()).orElse(t));
             } catch (Exception e) {
                 log.error("Synchronize data source error : ", e);
             } finally {
-                Mono.delay(Duration.ofSeconds(10)).subscribe(this::doSynchronize);
+                Mono.delay(Duration.ofSeconds(10)).subscribe(i -> doSynchronize());
             }
         });
     }

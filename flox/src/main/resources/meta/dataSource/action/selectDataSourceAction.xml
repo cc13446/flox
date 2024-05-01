@@ -15,5 +15,8 @@
         <if test="status != null">
             and status = CAST(#{status} AS BOOLEAN)
         </if>
+        <if test="updateTime != null">
+            and update_time > CAST(#{updateTime} AS TIMESTAMPTZ)
+        </if>
     </where>
 </root>

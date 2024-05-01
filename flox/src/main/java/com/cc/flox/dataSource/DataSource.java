@@ -36,4 +36,5 @@ public class DataSource {
      * 数据源类型
      */
     private final DataSourceType dataSourceType;
+
 }

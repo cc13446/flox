@@ -1,6 +1,7 @@
 package com.cc.flox.initializer.meta;
 
 import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
+import com.cc.flox.meta.entity.DataSourcesEntity;
 import com.cc.flox.node.NodeManager;
 import jakarta.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +27,7 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_ECHO = "meta_sub_echo";
 
     public static final String META_SUB_FLOX_CODE_INSERT_DATA_SOURCE = "meta_sub_insert_data_source";
+    public static final String META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE = "meta_sub_update_data_source";
     public static final String META_SUB_FLOX_CODE_SELECT_DATA_SOURCE = "meta_sub_select_data_source";
 
     public static final String META_SUB_FLOX_CODE_INSERT_DATA_SOURCE_ACTION = "meta_sub_insert_data_source_action";
@@ -50,6 +52,13 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 List.of(List.class),
                 List.class,
                 Map.of(META_NODE_CODE_INSERT_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+        );
+
+        nodeManager.putMetaSubFlox(
+                META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE,
+                List.of(Map.class),
+                List.class,
+                Map.of(META_NODE_CODE_UPDATE_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
         nodeManager.putMetaSubFlox(
@@ -78,7 +87,7 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
         nodeManager.putMetaSubFlox(
                 META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION,
                 List.of(Map.class),
-                List.class,
+                DataSourcesEntity.class,
                 Map.of(META_NODE_CODE_SELECT_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
                         META_NODE_CODE_SELECT_DATA_SOURCE_ACTION, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
                         META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION, List.of(META_NODE_CODE_SELECT_DATA_SOURCE, META_NODE_CODE_SELECT_DATA_SOURCE_ACTION))
