@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.cc.flox.dataType.DataTypeClassLoader.DATA_TYPE_PACKAGE_NAME;
+
 
 /**
  * 元流程节点初始化器
@@ -173,7 +175,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
                     AssertUtils.assertNonBlank((String) m.get(Constant.CODE), "Data type code cannot be blank");
                     AssertUtils.assertNonBlank((String) m.get(Constant.CONTENT), "Data type content cannot be blank");
                     String code = m.get(Constant.CONTENT).toString();
-                    String expectPackage = "com.cc.flox.data.type";
+                    String expectPackage = DATA_TYPE_PACKAGE_NAME;
                     String packageName = JavaCodeUtils.getPackageNameFromCode(code);
                     AssertUtils.assertTrue(expectPackage.equals(packageName), "The package name of data type content is fixed(" + expectPackage + ")");
                     String dataTypeCode = m.get(Constant.CODE).toString();

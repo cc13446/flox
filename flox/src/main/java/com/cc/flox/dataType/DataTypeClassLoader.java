@@ -2,6 +2,7 @@ package com.cc.flox.dataType;
 
 import com.cc.flox.meta.Constant;
 import com.cc.flox.node.NodeManager;
+import com.cc.flox.utils.JavaCodeUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,10 @@ import static com.cc.flox.utils.FormatUtils.YYYY_MM_DD_HH_MM_SS;
  */
 @Slf4j
 @Component
-public class DataTypeClassLoader {
+public class DataTypeClassLoader extends ClassLoader {
+
+    public static final String DATA_TYPE_PACKAGE_NAME = "com.cc.flox.data.type";
+
     /**
      * 数据类型字节码 map
      */
@@ -62,16 +66,16 @@ public class DataTypeClassLoader {
     @SuppressWarnings("unchecked")
     private void doSynchronize() {
         log.info("Start synchronize data type, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
-        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE).exec(Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
+        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE).exec(Mono.just(Map.of(Constant.UPDATE_TIME, List.of(updateTime.get())))).subscribe(l -> {
             try {
                 List<Map<String, Object>> nodes = (List<Map<String, Object>>) l;
                 Map<String, String> map = nodes.stream().collect(Collectors.toMap(m -> m.get(Constant.PATH).toString(), m -> m.get(Constant.CONTENT).toString()));
                 for (Map.Entry<String, String> entry : map.entrySet()) {
-
+                    classMap.put(entry.getKey(), JavaCodeUtils.codeToClass(entry.getValue()));
                 }
                 this.updateTime.updateAndGet(t -> nodes.stream()
-                        .filter(m -> Objects.nonNull(m.get(Constant.UPDATE_TIME)))
-                        .map(m -> (OffsetDateTime) m.get(Constant.UPDATE_TIME))
+                        .filter(m -> Objects.nonNull(m.get(Constant._UPDATE_TIME)))
+                        .map(m -> (OffsetDateTime) m.get(Constant._UPDATE_TIME))
                         .max(OffsetDateTime::compareTo).orElse(t));
             } catch (Exception e) {
                 log.error("Synchronize data type error : ", e);
@@ -79,6 +83,29 @@ public class DataTypeClassLoader {
                 Mono.delay(Duration.ofSeconds(10)).subscribe(i -> doSynchronize());
             }
         });
+    }
+
+    @Override
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        ClassLoader system = getSystemClassLoader();
+        // 需要隔离的类，打破双亲委派
+        if (name.startsWith(DATA_TYPE_PACKAGE_NAME)) {
+            return findClass(name);
+        }
+        try {
+            return system.loadClass(name);
+        } catch (Exception e) {
+            return findClass(name);
+        }
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        byte[] data = this.classMap.getOrDefault(name, null);
+        if (Objects.isNull(data)) {
+            throw new ClassNotFoundException(name);
+        }
+        return this.defineClass(name, data, 0, data.length);
     }
 
 }
