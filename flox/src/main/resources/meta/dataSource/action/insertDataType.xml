@@ -1,0 +1,9 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    insert into data_type(code, path, content, attribute)
+    values
+    <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
+        #{item.code}, #{item.path}, #{item.content}, #{item.attribute}
+    </foreach>
+</root>

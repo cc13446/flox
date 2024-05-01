@@ -57,6 +57,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION = "meta_node_update_data_source_action";
     public static final String META_NODE_CODE_SELECT_DATA_SOURCE_ACTION = "meta_node_select_data_source_action";
 
+    public static final String META_NODE_CODE_INSERT_DATA_TYPE = "meta_node_insert_data_type";
+    public static final String META_NODE_CODE_SELECT_DATA_TYPE = "meta_node_select_data_type";
+
     public static final String META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION = "meta_node_concat_data_source_and_action";
 
     /**
@@ -157,6 +160,26 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSourceAction"),
+                List.of(Map.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_INSERT_DATA_TYPE,
+                NodeType.DATA_SOURCE_LOADER,
+                DATA_SOURCE_LOADER,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataType"),
+                List.of(List.class, DataSourceManager.class),
+                List.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_SELECT_DATA_TYPE,
+                NodeType.DATA_SOURCE_LOADER,
+                DATA_SOURCE_LOADER,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataType"),
                 List.of(Map.class, DataSourceManager.class),
                 List.class,
                 HashMap.newHashMap(1))

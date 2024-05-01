@@ -31,7 +31,7 @@ public class MetaDataSourceInitializer implements CommandLineRunner {
     /**
      * 元数据库中的数据表
      */
-    private static final List<String> META_DATA_SOURCE_TABLE_LIST = List.of("data_source", "data_source_action");
+    private static final List<String> META_DATA_SOURCE_TABLE_LIST = List.of("data_source", "data_source_action", "data_type");
 
     /**
      * 元数据库数据表初始化文件路径

@@ -1,0 +1,13 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    select * from data_type
+    <where>
+        <if test="code != null">
+            and code like CONCAT('%', #{code}, '%')
+        </if>
+        <if test="updateTime != null">
+            and update_time > CAST(#{updateTime} AS TIMESTAMPTZ)
+        </if>
+    </where>
+</root>

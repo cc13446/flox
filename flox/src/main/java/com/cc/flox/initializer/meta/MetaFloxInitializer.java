@@ -43,6 +43,8 @@ public class MetaFloxInitializer implements CommandLineRunner {
         apiManager.insertHandler(getInsertDataSourceActionEndPoint()).get();
         apiManager.insertHandler(getUpdateDataSourceActionEndPoint()).get();
         apiManager.insertHandler(getSelectDataSourceActionEndPoint()).get();
+        apiManager.insertHandler(getInsertDataTypeEndPoint()).get();
+        apiManager.insertHandler(getSelectDataTypeEndPoint()).get();
     }
 
     /**
@@ -109,6 +111,28 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE_ACTION))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
         return new ApiEndPoint("/data-source/action/update", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return select data type end point
+     */
+    private ApiEndPoint getInsertDataTypeEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_TYPE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/data-type/insert", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return select data type end point
+     */
+    private ApiEndPoint getSelectDataTypeEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/data-type/select", ApiMethod.GET, builder.builder());
     }
 
     /**
