@@ -66,6 +66,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_NODE = "meta_node_update_node";
     public static final String META_NODE_CODE_SELECT_NODE = "meta_node_select_node";
 
+    // node relation
+    public static final String META_NODE_CODE_INSERT_NODE_RELATION = "meta_node_insert_node_relation";
+    public static final String META_NODE_CODE_UPDATE_NODE_RELATION = "meta_node_update_node_relation";
+    public static final String META_NODE_CODE_SELECT_NODE_RELATION = "meta_node_select_node_relation";
+
 
     /**
      * 默认数据源加载器
@@ -106,25 +111,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
         );
 
         // data source
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_INSERT_DATA_SOURCE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSource"),
-                List.of(List.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
-
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_UPDATE_DATA_SOURCE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSource"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_DATA_SOURCE, "insertDataSource");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_DATA_SOURCE, "updateDataSource");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_DATA_SOURCE, "selectDataSource");
 
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_UPDATE_DATA_SOURCE_UPDATE_TIME_BATCH,
@@ -132,16 +121,6 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 DATA_SOURCE_LOADER,
                 Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSourceUpdateTimeBatch"),
                 List.of(List.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
-
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_SELECT_DATA_SOURCE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSource"),
-                List.of(Map.class, DataSourceManager.class),
                 List.class,
                 HashMap.newHashMap(1))
         );
@@ -163,35 +142,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 List.class)
         );
 
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_INSERT_DATA_SOURCE_ACTION,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataSourceAction"),
-                List.of(List.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
-
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSourceAction"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
-
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_SELECT_DATA_SOURCE_ACTION,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataSourceAction"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_DATA_SOURCE_ACTION, "insertDataSourceAction");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION, "updateDataSourceAction");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_DATA_SOURCE_ACTION, "selectDataSourceAction");
 
         nodeManager.putMetaNode(new NodeEntity(
                 META_NODE_CODE_CONCAT_DATA_SOURCE_AND_ACTION,
@@ -252,25 +205,8 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 HashMap.newHashMap(1))
         );
 
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_INSERT_DATA_TYPE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertDataType"),
-                List.of(List.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
-
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_SELECT_DATA_TYPE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectDataType"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_DATA_TYPE, "insertDataType");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_DATA_TYPE, "selectDataType");
 
         // node
         nodeManager.putMetaNode(new NodeEntity(
@@ -289,33 +225,54 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 HashMap.newHashMap(1))
         );
 
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_INSERT_NODE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "insertNode"),
-                List.of(List.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_NODE, "insertNode");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_NODE, "updateNode");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_NODE, "selectNode");
 
-        nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_UPDATE_NODE,
-                NodeType.DATA_SOURCE_LOADER,
-                DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateNode"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
-                HashMap.newHashMap(1))
-        );
+        // node_relation
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_NODE_RELATION, "insertNodeRelation");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_NODE_RELATION, "updateNodeRelation");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_NODE_RELATION, "selectNodeRelation");
+    }
 
+    /**
+     * @param nodeCode   node code
+     * @param actionCode action code
+     */
+    private void putBaseInsertMetaNode(String nodeCode, String actionCode) {
+        putBaseDataSourceLoaderNode(nodeCode, actionCode, List.of(List.class, DataSourceManager.class), List.class);
+    }
+
+    /**
+     * @param nodeCode   node code
+     * @param actionCode action code
+     */
+    private void putBaseUpdateMetaNode(String nodeCode, String actionCode) {
+        putBaseDataSourceLoaderNode(nodeCode, actionCode, List.of(Map.class, DataSourceManager.class), List.class);
+    }
+
+    /**
+     * @param nodeCode   node code
+     * @param actionCode action code
+     */
+    private void putBaseSelectMetaNode(String nodeCode, String actionCode) {
+        putBaseDataSourceLoaderNode(nodeCode, actionCode, List.of(Map.class, DataSourceManager.class), List.class);
+    }
+
+    /**
+     * @param nodeCode       node code
+     * @param actionCode     action code
+     * @param paramClassList 参数类型
+     * @param resultClass    结果类型
+     */
+    private void putBaseDataSourceLoaderNode(String nodeCode, String actionCode, List<Class<?>> paramClassList, Class<?> resultClass) {
         nodeManager.putMetaNode(new NodeEntity(
-                META_NODE_CODE_SELECT_NODE,
+                nodeCode,
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "selectNode"),
-                List.of(Map.class, DataSourceManager.class),
-                List.class,
+                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, actionCode),
+                paramClassList,
+                resultClass,
                 HashMap.newHashMap(1))
         );
     }

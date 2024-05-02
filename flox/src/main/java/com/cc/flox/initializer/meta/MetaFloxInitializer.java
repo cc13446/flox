@@ -37,17 +37,20 @@ public class MetaFloxInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         apiManager.insertHandler(getEchoEndPoint()).get();
-        apiManager.insertHandler(getInsertDataSourceEndPoint()).get();
-        apiManager.insertHandler(getUpdateDataSourceEndPoint()).get();
-        apiManager.insertHandler(getSelectDataSourceEndPoint()).get();
-        apiManager.insertHandler(getInsertDataSourceActionEndPoint()).get();
-        apiManager.insertHandler(getUpdateDataSourceActionEndPoint()).get();
-        apiManager.insertHandler(getSelectDataSourceActionEndPoint()).get();
-        apiManager.insertHandler(getInsertDataTypeEndPoint()).get();
-        apiManager.insertHandler(getSelectDataTypeEndPoint()).get();
-        apiManager.insertHandler(getInsertNodeEndPoint()).get();
-        apiManager.insertHandler(getUpdateNodeEndPoint()).get();
-        apiManager.insertHandler(getSelectNodeEndPoint()).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE, "/data-source/insert")).get();
+        apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE, "/data-source/update")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE, "/data-source/select")).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE_ACTION, "/data-source/action/insert")).get();
+        apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE_ACTION, "/data-source/action/update")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE_ACTION, "/data-source/action/select")).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_DATA_TYPE, "/data-type/insert")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_DATA_TYPE, "/data-type/select")).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_NODE, "/node/insert")).get();
+        apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_NODE, "/node/update")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_NODE, "/node/select")).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_NODE_RELATION, "/node/relation/insert")).get();
+        apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_NODE_RELATION, "/node/relation/update")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_NODE_RELATION, "/node/relation/select")).get();
     }
 
     /**
@@ -62,124 +65,42 @@ public class MetaFloxInitializer implements CommandLineRunner {
     }
 
     /**
-     * @return insert data source end point
+     * @param subFloxCode 子流程code
+     * @param path        路径
+     * @return base insert end point
      */
-    private ApiEndPoint getInsertDataSourceEndPoint() {
+    private ApiEndPoint getBaseInsertEndPoint(String subFloxCode, String path) {
         FloxBuilder builder = new FloxBuilder()
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE))
+                .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/insert", ApiMethod.POST, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.POST, builder.builder());
     }
 
     /**
-     * @return update data source end point
+     * @param subFloxCode 子流程code
+     * @param path        路径
+     * @return base update end point
      */
-    private ApiEndPoint getUpdateDataSourceEndPoint() {
+    private ApiEndPoint getBaseUpdateEndPoint(String subFloxCode, String path) {
         FloxBuilder builder = new FloxBuilder()
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE))
+                .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/update", ApiMethod.POST, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.POST, builder.builder());
     }
 
     /**
-     * @return select data source end point
+     * @param subFloxCode 子流程code
+     * @param path        路径
+     * @return base select end point
      */
-    private ApiEndPoint getSelectDataSourceEndPoint() {
+    private ApiEndPoint getBaseSelectEndPoint(String subFloxCode, String path) {
         FloxBuilder builder = new FloxBuilder()
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE))
+                .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/select", ApiMethod.GET, builder.builder());
-    }
-
-    /**
-     * @return insert data source action end point
-     */
-    private ApiEndPoint getInsertDataSourceActionEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE_ACTION))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/action/insert", ApiMethod.POST, builder.builder());
-    }
-
-    /**
-     * @return update data source action end point
-     */
-    private ApiEndPoint getUpdateDataSourceActionEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE_ACTION))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/action/update", ApiMethod.POST, builder.builder());
-    }
-
-    /**
-     * @return select data source action end point
-     */
-    private ApiEndPoint getSelectDataSourceActionEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE_ACTION))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-source/action/select", ApiMethod.GET, builder.builder());
-    }
-
-    /**
-     * @return insert data type end point
-     */
-    private ApiEndPoint getInsertDataTypeEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_TYPE))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-type/insert", ApiMethod.POST, builder.builder());
-    }
-
-    /**
-     * @return select data type end point
-     */
-    private ApiEndPoint getSelectDataTypeEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/data-type/select", ApiMethod.GET, builder.builder());
-    }
-
-    /**
-     * @return insert node end point
-     */
-    private ApiEndPoint getInsertNodeEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_NODE))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/node/insert", ApiMethod.POST, builder.builder());
-    }
-
-    /**
-     * @return update node end point
-     */
-    private ApiEndPoint getUpdateNodeEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_NODE))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/node/update", ApiMethod.POST, builder.builder());
-    }
-
-    /**
-     * @return select node end point
-     */
-    private ApiEndPoint getSelectNodeEndPoint() {
-        FloxBuilder builder = new FloxBuilder()
-                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
-                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_NODE))
-                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/node/select", ApiMethod.GET, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.GET, builder.builder());
     }
 
     /**

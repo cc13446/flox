@@ -1,0 +1,16 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    update node_relation
+    <set>
+        <if test="pre_node_code_list != null">
+            pre_node_code_list = #{preNodeCodeList},
+        </if>
+        <if test="status != null">
+            status = CAST(#{status} AS BOOLEAN),
+        </if>
+    </set>
+    <where>
+        code = #{code} and sub_flox_code = #{subFloxCode}
+    </where>
+</root>

@@ -1,0 +1,9 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    insert into node_relation(code, sub_flox_code, pre_node_code_list)
+    values
+    <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
+        #{item.code}, #{item.subFloxCode}, #{item.preNodeCodeList},true
+    </foreach>
+</root>

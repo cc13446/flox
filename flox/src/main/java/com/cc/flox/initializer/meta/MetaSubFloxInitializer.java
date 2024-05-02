@@ -46,6 +46,11 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_UPDATE_NODE = "meta_sub_update_node";
     public static final String META_SUB_FLOX_CODE_SELECT_NODE = "meta_sub_select_node";
 
+    // node relation
+    public static final String META_SUB_FLOX_CODE_INSERT_NODE_RELATION = "meta_sub_insert_node_relation";
+    public static final String META_SUB_FLOX_CODE_UPDATE_NODE_RELATION = "meta_sub_update_node_relation";
+    public static final String META_SUB_FLOX_CODE_SELECT_NODE_RELATION = "meta_sub_select_node_relation";
+
     @Resource
     private NodeManager nodeManager;
 
@@ -59,27 +64,9 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
         );
 
         // data source
-        nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_INSERT_DATA_SOURCE,
-                List.of(List.class),
-                List.class,
-                Map.of(META_NODE_CODE_INSERT_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
-        );
-
-        nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE,
-                List.of(Map.class),
-                List.class,
-                Map.of(META_NODE_CODE_UPDATE_DATA_SOURCE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
-        );
-
-        nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_SELECT_DATA_SOURCE,
-                List.of(Map.class),
-                List.class,
-                Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
-                        META_NODE_CODE_SELECT_DATA_SOURCE, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
-        );
+        putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_DATA_SOURCE, META_NODE_CODE_INSERT_DATA_SOURCE);
+        putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_DATA_SOURCE, META_NODE_CODE_UPDATE_DATA_SOURCE);
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE, META_NODE_CODE_SELECT_DATA_SOURCE);
 
         // data source action
         nodeManager.putMetaSubFlox(
@@ -100,13 +87,7 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                         META_NODE_CODE_UPDATE_DATA_SOURCE_UPDATE_TIME_BATCH, List.of(META_NODE_CODE_TRANS_DATA_SOURCE_CODE_MAP_TO_CODE_LIST, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
-        nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_SELECT_DATA_SOURCE_ACTION,
-                List.of(Map.class),
-                List.class,
-                Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
-                        META_NODE_CODE_SELECT_DATA_SOURCE_ACTION, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
-        );
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_SOURCE_ACTION, META_NODE_CODE_SELECT_DATA_SOURCE_ACTION);
 
         nodeManager.putMetaSubFlox(
                 META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION,
@@ -126,13 +107,7 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                         META_NODE_CODE_INSERT_DATA_TYPE, List.of(META_NODE_CODE_INSERT_DATA_TYPE_TRANSFORMER, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
-        nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_SELECT_DATA_TYPE,
-                List.of(Map.class),
-                List.class,
-                Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
-                        META_NODE_CODE_SELECT_DATA_TYPE, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
-        );
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE, META_NODE_CODE_SELECT_DATA_TYPE);
 
         // node
         nodeManager.putMetaSubFlox(
@@ -140,23 +115,57 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 List.of(List.class),
                 List.class,
                 Map.of(META_NODE_CODE_INSERT_NODE_TRANSFORMER, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
-                        META_NODE_CODE_INSERT_DATA_TYPE, List.of(META_NODE_CODE_INSERT_NODE_TRANSFORMER, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                        META_NODE_CODE_INSERT_NODE, List.of(META_NODE_CODE_INSERT_NODE_TRANSFORMER, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
 
         );
 
+        putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_NODE, META_NODE_CODE_UPDATE_NODE);
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_NODE, META_NODE_CODE_SELECT_NODE);
+
+        // node relation
+        putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_NODE_RELATION, META_NODE_CODE_INSERT_NODE_RELATION);
+        putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_NODE_RELATION, META_NODE_CODE_UPDATE_NODE_RELATION);
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_NODE_RELATION, META_NODE_CODE_SELECT_NODE_RELATION);
+
+    }
+
+    /**
+     * @param subFloxCode          子流程code
+     * @param dataSourceLoaderCode 数据加载节点code
+     */
+    private void putBaseInsertMetaSubFlox(String subFloxCode, String dataSourceLoaderCode) {
         nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_UPDATE_NODE,
+                subFloxCode,
+                List.of(List.class),
+                List.class,
+                Map.of(dataSourceLoaderCode, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+        );
+    }
+
+    /**
+     * @param subFloxCode          子流程code
+     * @param dataSourceLoaderCode 数据加载节点code
+     */
+    private void putBaseUpdateMetaSubFlox(String subFloxCode, String dataSourceLoaderCode) {
+        nodeManager.putMetaSubFlox(
+                subFloxCode,
                 List.of(Map.class),
                 List.class,
-                Map.of(META_NODE_CODE_UPDATE_NODE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                Map.of(dataSourceLoaderCode, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
+    }
 
+    /**
+     * @param subFloxCode          子流程code
+     * @param dataSourceLoaderCode 数据加载节点code
+     */
+    private void putBaseSelectMetaSubFlox(String subFloxCode, String dataSourceLoaderCode) {
         nodeManager.putMetaSubFlox(
-                META_SUB_FLOX_CODE_SELECT_NODE,
+                subFloxCode,
                 List.of(Map.class),
                 List.class,
                 Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
-                        META_NODE_CODE_SELECT_NODE, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                        dataSourceLoaderCode, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
     }
 }
