@@ -43,6 +43,8 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
 
     // node
     public static final String META_SUB_FLOX_CODE_INSERT_NODE = "meta_sub_insert_node";
+    public static final String META_SUB_FLOX_CODE_UPDATE_NODE = "meta_sub_update_node";
+    public static final String META_SUB_FLOX_CODE_SELECT_NODE = "meta_sub_select_node";
 
     @Resource
     private NodeManager nodeManager;
@@ -140,6 +142,21 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 Map.of(META_NODE_CODE_INSERT_NODE_TRANSFORMER, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
                         META_NODE_CODE_INSERT_DATA_TYPE, List.of(META_NODE_CODE_INSERT_NODE_TRANSFORMER, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
 
+        );
+
+        nodeManager.putMetaSubFlox(
+                META_SUB_FLOX_CODE_UPDATE_NODE,
+                List.of(Map.class),
+                List.class,
+                Map.of(META_NODE_CODE_UPDATE_NODE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+        );
+
+        nodeManager.putMetaSubFlox(
+                META_SUB_FLOX_CODE_SELECT_NODE,
+                List.of(Map.class),
+                List.class,
+                Map.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM),
+                        META_NODE_CODE_SELECT_NODE, List.of(META_NODE_CODE_MULTI_VALUE_MAP_TO_MAP, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
     }
 }

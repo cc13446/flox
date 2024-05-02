@@ -1,0 +1,28 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    update node
+    <set>
+        <if test="type != null">
+            type = #{type},
+        </if>
+        <if test="content != null">
+            content = #{content},
+        </if>
+        <if test="attribute != null">
+            attribute = #{attribute},
+        </if>
+        <if test="param_class_list != null">
+            param_class_list = #{param_class_list},
+        </if>
+        <if test="result_class != null">
+            result_class = #{result_class},
+        </if>
+        <if test="status != null">
+            status = CAST(#{status} AS BOOLEAN),
+        </if>
+    </set>
+    <where>
+        code = #{code}
+    </where>
+</root>

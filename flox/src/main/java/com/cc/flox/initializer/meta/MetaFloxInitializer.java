@@ -46,6 +46,8 @@ public class MetaFloxInitializer implements CommandLineRunner {
         apiManager.insertHandler(getInsertDataTypeEndPoint()).get();
         apiManager.insertHandler(getSelectDataTypeEndPoint()).get();
         apiManager.insertHandler(getInsertNodeEndPoint()).get();
+        apiManager.insertHandler(getUpdateNodeEndPoint()).get();
+        apiManager.insertHandler(getSelectNodeEndPoint()).get();
     }
 
     /**
@@ -156,6 +158,28 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_INSERT_NODE))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
         return new ApiEndPoint("/node/insert", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return update node end point
+     */
+    private ApiEndPoint getUpdateNodeEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_UPDATE_NODE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/node/update", ApiMethod.POST, builder.builder());
+    }
+
+    /**
+     * @return select node end point
+     */
+    private ApiEndPoint getSelectNodeEndPoint() {
+        FloxBuilder builder = new FloxBuilder()
+                .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
+                .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_SELECT_NODE))
+                .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
+        return new ApiEndPoint("/node/select", ApiMethod.GET, builder.builder());
     }
 
     /**
