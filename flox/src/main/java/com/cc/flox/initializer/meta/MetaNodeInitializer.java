@@ -71,7 +71,6 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_NODE_RELATION = "meta_node_update_node_relation";
     public static final String META_NODE_CODE_SELECT_NODE_RELATION = "meta_node_select_node_relation";
 
-
     // flox
     public static final String META_NODE_CODE_INSERT_FLOX = "meta_node_insert_flox";
     public static final String META_NODE_CODE_UPDATE_FLOX = "meta_node_update_flox";
