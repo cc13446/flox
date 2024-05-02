@@ -57,6 +57,11 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_UPDATE_FLOX = "meta_sub_update_flox";
     public static final String META_SUB_FLOX_CODE_SELECT_FLOX = "meta_sub_select_flox";
 
+    // endpoint
+    public static final String META_SUB_FLOX_CODE_INSERT_ENDPOINT = "meta_sub_insert_endpoint";
+    public static final String META_SUB_FLOX_CODE_UPDATE_ENDPOINT = "meta_sub_update_endpoint";
+    public static final String META_SUB_FLOX_CODE_SELECT_ENDPOINT = "meta_sub_select_endpoint";
+
     @Resource
     private NodeManager nodeManager;
 
@@ -137,6 +142,11 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
         putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_FLOX, META_NODE_CODE_INSERT_FLOX);
         putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_FLOX, META_NODE_CODE_UPDATE_FLOX);
         putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_FLOX, META_NODE_CODE_SELECT_FLOX);
+
+        // endpoint
+        putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_ENDPOINT, META_NODE_CODE_INSERT_ENDPOINT);
+        putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_ENDPOINT, META_NODE_CODE_UPDATE_ENDPOINT);
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_ENDPOINT, META_NODE_CODE_SELECT_ENDPOINT);
 
     }
 

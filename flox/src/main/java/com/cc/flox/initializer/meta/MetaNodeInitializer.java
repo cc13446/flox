@@ -77,6 +77,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_FLOX = "meta_node_update_flox";
     public static final String META_NODE_CODE_SELECT_FLOX = "meta_node_select_flox";
 
+    // endpoint
+    public static final String META_NODE_CODE_INSERT_ENDPOINT = "meta_node_insert_endpoint";
+    public static final String META_NODE_CODE_UPDATE_ENDPOINT = "meta_node_update_endpoint";
+    public static final String META_NODE_CODE_SELECT_ENDPOINT = "meta_node_select_endpoint";
+
     /**
      * 默认数据源加载器
      */
@@ -243,6 +248,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
         putBaseInsertMetaNode(META_NODE_CODE_INSERT_FLOX, "insertFlox");
         putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_FLOX, "updateFlox");
         putBaseSelectMetaNode(META_NODE_CODE_SELECT_FLOX, "selectFlox");
+
+        // endpoint
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_ENDPOINT, "insertEndpoint");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_ENDPOINT, "updateEndpoint");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_ENDPOINT, "selectEndpoint");
     }
 
     /**

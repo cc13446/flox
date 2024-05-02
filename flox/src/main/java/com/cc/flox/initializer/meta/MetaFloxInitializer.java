@@ -54,6 +54,9 @@ public class MetaFloxInitializer implements CommandLineRunner {
         apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_FLOX, "/flox/insert")).get();
         apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_FLOX, "/flox/update")).get();
         apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_FLOX, "/flox/select")).get();
+        apiManager.insertHandler(getBaseInsertEndPoint(META_SUB_FLOX_CODE_INSERT_ENDPOINT, "/endpoint/inset")).get();
+        apiManager.insertHandler(getBaseUpdateEndPoint(META_SUB_FLOX_CODE_UPDATE_ENDPOINT, "/endpoint/update")).get();
+        apiManager.insertHandler(getBaseSelectEndPoint(META_SUB_FLOX_CODE_SELECT_ENDPOINT, "/endpoint/select")).get();
     }
 
     /**

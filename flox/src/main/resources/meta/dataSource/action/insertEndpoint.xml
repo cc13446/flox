@@ -1,0 +1,10 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    insert into endpoint(code, path, method, flox_code, attribute, status)
+    values
+    <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
+        #{item.code}, #{item.path}, #{item.method}, #{item.floxCode},
+        #{item.attribute}, true
+    </foreach>
+</root>

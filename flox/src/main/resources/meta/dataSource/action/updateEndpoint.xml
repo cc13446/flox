@@ -1,0 +1,25 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    update endpoint
+    <set>
+        <if test="path != null">
+            path = #{path},
+        </if>
+        <if test="method != null">
+            method = #{method},
+        </if>
+        <if test="floxCode != null">
+            flox_code = #{floxCode},
+        </if>
+        <if test="attribute != null">
+            attribute = #{attribute},
+        </if>
+        <if test="status != null">
+            status = CAST(#{status} AS BOOLEAN),
+        </if>
+    </set>
+    <where>
+        code = #{code}
+    </where>
+</root>
