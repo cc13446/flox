@@ -14,6 +14,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+
 /**
  * 节点类型
  *
@@ -62,5 +64,13 @@ public enum NodeType {
      * 执行逻辑
      */
     private final NodeExecFunction execFunction;
+
+    /**
+     * @param code code
+     * @return type
+     */
+    public static NodeType fromCode(String code) {
+        return Arrays.stream(NodeType.values()).filter(n -> n.getCode().equals(code)).findFirst().orElse(null);
+    }
 
 }

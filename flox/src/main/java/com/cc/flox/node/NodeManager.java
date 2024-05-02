@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class NodeManager {
 
+    public static final String DATA_NODE_PACKAGE_NAME = "com.cc.flox.data.node";
+
     /**
      * meta request extractor map
      */
