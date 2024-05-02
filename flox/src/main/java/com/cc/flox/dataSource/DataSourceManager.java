@@ -79,15 +79,45 @@ public class DataSourceManager {
      */
     private void doSynchronize() {
         log.info("Start synchronize data source, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
-        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.STATUS, "true", Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
+        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
             try {
                 DataSourcesEntity dataSources = (DataSourcesEntity) l;
+                if (!dataSources.update()) {
+                    return;
+                }
                 Map<String, DataSource> map = new HashMap<>(this.dataSources);
-                for (DataSource d : dataSources.dataSources()) {
-                    map.put(d.getCode(), d);
+
+                // 去除失效的数据源
+                Set<String> invalidDataSourceSet = dataSources.getInvalidDataSource();
+                for (String invalidDataSource : invalidDataSourceSet) {
+                    map.remove(invalidDataSource);
+                }
+                // 去除失效的动作
+                Map<String, String> invalidActionMap = dataSources.getInvalidAction();
+                for (Map.Entry<String, String> entry : invalidActionMap.entrySet()) {
+                    if (map.containsKey(entry.getValue())) {
+                        Map<String, Action> actionMap = map.get(entry.getValue()).getActions();
+                        if (!CollectionUtils.isEmpty(actionMap)) {
+                            actionMap.remove(entry.getKey());
+                        }
+                    }
+                }
+                // 合并新的数据源
+                List<DataSource> newDataSources = dataSources.getDataSources();
+                for (DataSource dataSource : newDataSources) {
+                    DataSource old = map.get(dataSource.getCode());
+                    if (Objects.isNull(old)) {
+                        map.put(dataSource.getCode(), dataSource);
+                    } else {
+                        Map<String, Action> oldAction = old.getActions();
+                        for (Map.Entry<String, Action> entry : oldAction.entrySet()) {
+                            dataSource.getActions().putIfAbsent(entry.getKey(), entry.getValue());
+                        }
+                        map.put(dataSource.getCode(), dataSource);
+                    }
                 }
                 this.dataSources = Collections.unmodifiableMap(map);
-                this.updateTime.updateAndGet(t -> Optional.ofNullable(dataSources.updateTime()).orElse(t));
+                this.updateTime.updateAndGet(t -> Optional.ofNullable(dataSources.getUpdateTime()).orElse(t));
             } catch (Exception e) {
                 log.error("Synchronize data source error : ", e);
             } finally {

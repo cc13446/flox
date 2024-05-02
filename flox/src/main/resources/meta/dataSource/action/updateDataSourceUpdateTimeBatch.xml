@@ -1,0 +1,15 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    update data_source
+    <set>
+        code = code,
+    </set>
+    <where>
+        code in (
+        <foreach collection="param" separator="," index="index" item="item">
+            #{item}
+        </foreach>
+        )
+    </where>
+</root>

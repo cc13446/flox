@@ -78,8 +78,8 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 List.of(List.class),
                 List.class,
                 Map.of(META_NODE_CODE_INSERT_DATA_SOURCE_ACTION, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
-                        META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, META_NODE_CODE_INSERT_DATA_SOURCE_ACTION),
-                        META_NODE_CODE_UPDATE_DATA_SOURCE, List.of(META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                        META_NODE_CODE_TRANS_DATA_SOURCE_CODE_LIST_TO_CODE_LIST, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, META_NODE_CODE_INSERT_DATA_SOURCE_ACTION),
+                        META_NODE_CODE_UPDATE_DATA_SOURCE_UPDATE_TIME_BATCH, List.of(META_NODE_CODE_TRANS_DATA_SOURCE_CODE_LIST_TO_CODE_LIST, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
         nodeManager.putMetaSubFlox(
@@ -87,8 +87,8 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
                 List.of(Map.class),
                 List.class,
                 Map.of(META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
-                        META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION),
-                        META_NODE_CODE_UPDATE_DATA_SOURCE, List.of(META_NODE_CODE_TRANS_DATA_SOURCE_CODE_TO_CODE, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
+                        META_NODE_CODE_TRANS_DATA_SOURCE_CODE_MAP_TO_CODE_LIST, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, META_NODE_CODE_UPDATE_DATA_SOURCE_ACTION),
+                        META_NODE_CODE_UPDATE_DATA_SOURCE_UPDATE_TIME_BATCH, List.of(META_NODE_CODE_TRANS_DATA_SOURCE_CODE_MAP_TO_CODE_LIST, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER))
         );
 
         nodeManager.putMetaSubFlox(

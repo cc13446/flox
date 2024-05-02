@@ -35,7 +35,7 @@ public class Flox {
      * handler
      */
     public Mono<Void> handler(ApiExchange exchange) {
-        Mono<Object> res = requestExtractor.exec(Mono.just(exchange.getRequest()));
+        Mono<Object> res = requestExtractor.exec(Mono.just(exchange.getRequest())).cache();
         return responseLoader.exec(subFlox.exec(res), Mono.just(exchange.getResponse())).mapNotNull(o -> null);
     }
 

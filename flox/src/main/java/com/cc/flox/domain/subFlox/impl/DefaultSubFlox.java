@@ -108,7 +108,7 @@ public class DefaultSubFlox implements SubFlox {
                     }
                     default -> throw new RuntimeException("Invalid node type : " + nodeEntity.nodeType());
                 }
-                Mono<Object> result = nodeEntity.exec(p);
+                Mono<Object> result = nodeEntity.exec(p).cache();
                 execResultMap.put(execStack.peek(), result);
                 execStack.pop();
             } else {
