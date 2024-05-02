@@ -1,0 +1,25 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    update flox
+    <set>
+        <if test="requestExtractorCode != null">
+            request_extractor_code = #{requestExtractorCode},
+        </if>
+        <if test="subFloxCode != null">
+            sub_flox_code = #{subFloxCode},
+        </if>
+        <if test="responseLoaderCode != null">
+            response_loader_code = #{responseLoaderCode},
+        </if>
+        <if test="attribute != null">
+            attribute = #{attribute},
+        </if>
+        <if test="status != null">
+            status = CAST(#{status} AS BOOLEAN),
+        </if>
+    </set>
+    <where>
+        code = #{code}
+    </where>
+</root>

@@ -72,6 +72,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_SELECT_NODE_RELATION = "meta_node_select_node_relation";
 
 
+    // flox
+    public static final String META_NODE_CODE_INSERT_FLOX = "meta_node_insert_flox";
+    public static final String META_NODE_CODE_UPDATE_FLOX = "meta_node_update_flox";
+    public static final String META_NODE_CODE_SELECT_FLOX = "meta_node_select_flox";
+
     /**
      * 默认数据源加载器
      */
@@ -233,6 +238,11 @@ public class MetaNodeInitializer implements CommandLineRunner {
         putBaseInsertMetaNode(META_NODE_CODE_INSERT_NODE_RELATION, "insertNodeRelation");
         putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_NODE_RELATION, "updateNodeRelation");
         putBaseSelectMetaNode(META_NODE_CODE_SELECT_NODE_RELATION, "selectNodeRelation");
+
+        // flox
+        putBaseInsertMetaNode(META_NODE_CODE_INSERT_FLOX, "insertFlox");
+        putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_FLOX, "updateFlox");
+        putBaseSelectMetaNode(META_NODE_CODE_SELECT_FLOX, "selectFlox");
     }
 
     /**

@@ -1,0 +1,10 @@
+<?xml version = "1.0" ?>
+<!DOCTYPE root SYSTEM "script.dtd">
+<root>
+    insert into flox(code, request_extractor_code, sub_flox_code, response_loader_code, attribute, status)
+    values
+    <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
+        #{item.code}, #{item.requestExtractorCode}, #{item.subFloxCode}, #{item.responseLoaderCode},
+        #{item.attribute}, true
+    </foreach>
+</root>

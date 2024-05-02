@@ -1,7 +1,7 @@
 <?xml version = "1.0" ?>
 <!DOCTYPE root SYSTEM "script.dtd">
 <root>
-    insert into node(code, type, content, attribute, param_class_list, result_class)
+    insert into node(code, type, content, attribute, param_class_list, result_class, status)
     values
     <foreach collection="param" open="(" close=")" separator="," index="index" item="item">
         #{item.code}, #{item.type}, #{item.content}, #{item.attribute}, #{item.paramClassList}, #{item.resultClass},true

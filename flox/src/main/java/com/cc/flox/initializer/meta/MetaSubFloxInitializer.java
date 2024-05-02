@@ -51,6 +51,12 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_UPDATE_NODE_RELATION = "meta_sub_update_node_relation";
     public static final String META_SUB_FLOX_CODE_SELECT_NODE_RELATION = "meta_sub_select_node_relation";
 
+
+    // flox
+    public static final String META_SUB_FLOX_CODE_INSERT_FLOX = "meta_sub_insert_flox";
+    public static final String META_SUB_FLOX_CODE_UPDATE_FLOX = "meta_sub_update_flox";
+    public static final String META_SUB_FLOX_CODE_SELECT_FLOX = "meta_sub_select_flox";
+
     @Resource
     private NodeManager nodeManager;
 
@@ -126,6 +132,11 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
         putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_NODE_RELATION, META_NODE_CODE_INSERT_NODE_RELATION);
         putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_NODE_RELATION, META_NODE_CODE_UPDATE_NODE_RELATION);
         putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_NODE_RELATION, META_NODE_CODE_SELECT_NODE_RELATION);
+
+        // flox
+        putBaseInsertMetaSubFlox(META_SUB_FLOX_CODE_INSERT_FLOX, META_NODE_CODE_INSERT_FLOX);
+        putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_FLOX, META_NODE_CODE_UPDATE_FLOX);
+        putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_FLOX, META_NODE_CODE_SELECT_FLOX);
 
     }
 
