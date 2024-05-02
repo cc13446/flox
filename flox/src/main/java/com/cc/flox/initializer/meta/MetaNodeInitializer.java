@@ -1,6 +1,7 @@
 package com.cc.flox.initializer.meta;
 
 import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.dataType.DataTypeClassLoader;
 import com.cc.flox.domain.loader.DataSourceLoader;
 import com.cc.flox.domain.node.NodeType;
 import com.cc.flox.domain.transformer.BiTransformer;
@@ -20,10 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.cc.flox.dataType.DataTypeClassLoader.DATA_TYPE_PACKAGE_NAME;
 import static com.cc.flox.node.NodeManager.DATA_NODE_PACKAGE_NAME;
@@ -98,6 +96,9 @@ public class MetaNodeInitializer implements CommandLineRunner {
 
     @Resource
     private GroovyCodeUtils groovyCodeUtils;
+
+    @Resource
+    private DataTypeClassLoader dataTypeClassLoader;
 
     @Override
     public void run(String... args) {
@@ -235,6 +236,19 @@ public class MetaNodeInitializer implements CommandLineRunner {
                     String code = m.get(Constant.CONTENT).toString();
                     AssertUtils.assertTrue(DATA_NODE_PACKAGE_NAME.equals(GroovyCodeUtils.getPackageNameFromCode(code)), "The package name of data type content is fixed(" + DATA_NODE_PACKAGE_NAME + ")");
                     AssertUtils.assertNonNull(groovyCodeUtils.getGroovyObject(code, type.getClazz()), "Node groovy code cannot be compiled");
+                    List<String> paramClassStringList = Arrays.stream(m.get(Constant._PARAM_CLASS_LIST).toString().split(",")).toList();
+                    for (String paramClass : paramClassStringList) {
+                        try {
+                            dataTypeClassLoader.loadClass(paramClass);
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException("Class [" + paramClass + "] not found", e);
+                        }
+                    }
+                    try {
+                        dataTypeClassLoader.loadClass(m.get(Constant._RESULT_CLASS).toString());
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException("Class [" + m.get(Constant._RESULT_CLASS).toString() + "] not found", e);
+                    }
                 }).toList())),
                 HashMap.newHashMap(1),
                 List.of(List.class),

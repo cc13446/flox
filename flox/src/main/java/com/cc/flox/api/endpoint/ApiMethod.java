@@ -15,10 +15,15 @@ import java.util.Arrays;
 @AllArgsConstructor
 @Getter
 public enum ApiMethod {
-    GET(HttpMethod.GET),
-    POST(HttpMethod.POST),
-    PUT(HttpMethod.PUT),
-    DELETE(HttpMethod.DELETE);
+    GET("GET", HttpMethod.GET),
+    POST("POST", HttpMethod.POST),
+    PUT("PUT", HttpMethod.PUT),
+    DELETE("DELETE", HttpMethod.DELETE);
+
+    /**
+     * code
+     */
+    private final String code;
 
     /**
      * http method
@@ -27,5 +32,9 @@ public enum ApiMethod {
 
     public static ApiMethod fromHttpMethod(HttpMethod method) {
         return Arrays.stream(ApiMethod.values()).filter(apiMethod -> apiMethod.getHttpMethod().equals(method)).findFirst().orElse(null);
+    }
+
+    public static ApiMethod fromCode(String code) {
+        return Arrays.stream(ApiMethod.values()).filter(apiMethod -> apiMethod.getCode().equals(code)).findFirst().orElse(null);
     }
 }

@@ -67,7 +67,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
                 .setSubFloxBuilder(() -> getSubFlox(META_SUB_FLOX_CODE_ECHO))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint("/echo", ApiMethod.GET, builder.builder());
+        return new ApiEndPoint("/echo", ApiMethod.GET, builder.build());
     }
 
     /**
@@ -80,7 +80,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_LIST_MAP))
                 .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint(path, ApiMethod.POST, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.POST, builder.build());
     }
 
     /**
@@ -93,7 +93,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_BODY_PARAMS_TO_MAP))
                 .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint(path, ApiMethod.POST, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.POST, builder.build());
     }
 
     /**
@@ -106,7 +106,7 @@ public class MetaFloxInitializer implements CommandLineRunner {
                 .setRequestExtractorBuilder(() -> nodeManager.getRequestExtract(META_REQUEST_EXTRACTOR_CODE_QUERY_PARAMS_TO_MAP))
                 .setSubFloxBuilder(() -> getSubFlox(subFloxCode))
                 .setResponseLoaderBuilder(() -> nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON));
-        return new ApiEndPoint(path, ApiMethod.GET, builder.builder());
+        return new ApiEndPoint(path, ApiMethod.GET, builder.build());
     }
 
     /**

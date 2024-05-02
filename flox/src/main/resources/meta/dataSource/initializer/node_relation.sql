@@ -9,7 +9,7 @@ CREATE TABLE node_relation
     update_time        TIMESTAMPTZ DEFAULT current_timestamp
 );
 
-CREATE UNIQUE INDEX node_relation_code_index ON node_relation (code);
+CREATE UNIQUE INDEX node_relation_code_index ON node_relation (code, sub_flox_code);
 
 CREATE
     OR

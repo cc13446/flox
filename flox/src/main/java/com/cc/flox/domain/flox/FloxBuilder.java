@@ -1,7 +1,9 @@
 package com.cc.flox.domain.flox;
 
+import com.cc.flox.meta.entity.FloxEntity;
 import com.cc.flox.meta.entity.NodeEntity;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.function.Supplier;
@@ -14,7 +16,14 @@ import java.util.function.Supplier;
  */
 @Data
 @Accessors(chain = true)
+@NoArgsConstructor
 public class FloxBuilder {
+
+    public FloxBuilder(FloxEntity entity) {
+        this.requestExtractorBuilder = entity::requestExtractor;
+        this.subFloxBuilder = entity::subFlox;
+        this.responseLoaderBuilder = entity::responseLoader;
+    }
 
     /**
      * HTTP请求提取器构建者
@@ -36,7 +45,7 @@ public class FloxBuilder {
      *
      * @return flox
      */
-    public Flox builder() {
+    public Flox build() {
         return new Flox(requestExtractorBuilder.get(), subFloxBuilder.get(), responseLoaderBuilder.get());
     }
 }

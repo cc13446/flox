@@ -58,7 +58,7 @@ public enum NodeType {
     /**
      * 类型
      */
-    private final Class<?> clazz;
+    private final Class<? extends Node> clazz;
 
     /**
      * 执行逻辑

@@ -7,9 +7,12 @@ package com.cc.flox.meta.entity;
  * @date 2024/4/27
  */
 public record FloxEntity(
+
+        String code,
+
         NodeEntity requestExtractor,
 
-        NodeEntity subFloxCode,
+        NodeEntity subFlox,
 
         NodeEntity responseLoader) {
 }

@@ -36,4 +36,15 @@ public class Constant {
     public static final String NODE_RELATION = "nodeRelation";
     public static final String FLOX = "flox";
     public static final String ENDPOINT = "endpoint";
+
+    public static final String _SUB_FLOX_CODE = "sub_flox_code";
+    public static final String _PARAM_CLASS_LIST = "param_class_list";
+    public static final String _RESULT_CLASS = "result_class";
+    public static final String _PRE_NODE_CODE_LIST = "pre_node_code_list";
+
+    public static final String _REQUEST_EXTRACTOR_CODE = "request_extractor_code";
+    public static final String _RESPONSE_LOADER_CODE = "response_loader_code";
+
+    public static final String METHOD = "method";
+    public static final String _FLOX_CODE = "flox_code";
 }
