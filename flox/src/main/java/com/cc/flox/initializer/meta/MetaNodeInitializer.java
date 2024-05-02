@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.cc.flox.dataType.DataTypeClassLoader.DATA_TYPE_PACKAGE_NAME;
+import static com.cc.flox.node.NodeManager.DATA_NODE_PACKAGE_NAME;
 
 
 /**
@@ -232,6 +233,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
                     AssertUtils.assertNonBlank((String) m.get(Constant.CONTENT), "Node content cannot be blank");
                     NodeType type = AssertUtils.assertNonNull(NodeType.fromCode((String) m.get(Constant.TYPE)), "Node type cannot be null");
                     String code = m.get(Constant.CONTENT).toString();
+                    AssertUtils.assertTrue(DATA_NODE_PACKAGE_NAME.equals(GroovyCodeUtils.getPackageNameFromCode(code)), "The package name of data type content is fixed(" + DATA_NODE_PACKAGE_NAME + ")");
                     AssertUtils.assertNonNull(groovyCodeUtils.getGroovyObject(code, type.getClazz()), "Node groovy code cannot be compiled");
                 }).toList())),
                 HashMap.newHashMap(1),

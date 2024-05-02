@@ -5,12 +5,31 @@ import groovy.lang.GroovyClassLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author cc
  * @date 2024/5/2
  */
 @Component
 public class GroovyCodeUtils {
+
+    /**
+     * 包名正则匹配
+     */
+    private static final Pattern PACKAGE_NAME_PATTERN = Pattern.compile("package\\s+([a-zA-Z1-9_$.]*)\\s*\n");
+
+    /**
+     * 从groovy code字符串中获取包名
+     */
+    public static String getPackageNameFromCode(String code) {
+        Matcher matcher = PACKAGE_NAME_PATTERN.matcher(code);
+        if (!matcher.find()) {
+            return null;
+        }
+        return matcher.group(1);
+    }
 
     /**
      * groovy 类加载器
