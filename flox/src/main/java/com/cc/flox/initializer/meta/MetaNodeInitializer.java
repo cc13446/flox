@@ -81,6 +81,12 @@ public class MetaNodeInitializer implements CommandLineRunner {
     public static final String META_NODE_CODE_UPDATE_ENDPOINT = "meta_node_update_endpoint";
     public static final String META_NODE_CODE_SELECT_ENDPOINT = "meta_node_select_endpoint";
 
+    // node manager
+    public static final String META_NODE_CODE_CONCAT_NODE_AND_RELATION = "meta_node_concat_node_and_relation";
+    public static final String META_NODE_CODE_CONCAT_FLOX_AND_ENDPOINT = "meta_node_concat_flox_and_endpoint";
+    public static final String META_NODE_CODE_CONCAT_TWO_MAP = "meta_node_concat_two_map";
+
+
     /**
      * 默认数据源加载器
      */
@@ -252,6 +258,50 @@ public class MetaNodeInitializer implements CommandLineRunner {
         putBaseInsertMetaNode(META_NODE_CODE_INSERT_ENDPOINT, "insertEndpoint");
         putBaseUpdateMetaNode(META_NODE_CODE_UPDATE_ENDPOINT, "updateEndpoint");
         putBaseSelectMetaNode(META_NODE_CODE_SELECT_ENDPOINT, "selectEndpoint");
+
+        // node manager
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_CONCAT_NODE_AND_RELATION,
+                NodeType.BI_TRANSFORMER,
+                (BiTransformer<List<Map<String, Object>>, List<Map<String, Object>>, Map<String, List<Map<String, Object>>>>) (n, r, a) -> Mono.zip(n, r).flatMap(t -> {
+                    Map<String, List<Map<String, Object>>> res = HashMap.newHashMap(2);
+                    res.put(Constant.NODE, t.getT1());
+                    res.put(Constant.NODE_RELATION, t.getT2());
+                    return Mono.just(res);
+                }),
+                HashMap.newHashMap(1),
+                List.of(List.class, List.class),
+                Map.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_CONCAT_FLOX_AND_ENDPOINT,
+                NodeType.BI_TRANSFORMER,
+                (BiTransformer<List<Map<String, Object>>, List<Map<String, Object>>, Map<String, List<Map<String, Object>>>>) (f, e, a) -> Mono.zip(f, e).flatMap(t -> {
+                    Map<String, List<Map<String, Object>>> res = HashMap.newHashMap(2);
+                    res.put(Constant.FLOX, t.getT1());
+                    res.put(Constant.ENDPOINT, t.getT2());
+                    return Mono.just(res);
+                }),
+                HashMap.newHashMap(1),
+                List.of(List.class, List.class),
+                Map.class,
+                HashMap.newHashMap(1))
+        );
+
+        nodeManager.putMetaNode(new NodeEntity(
+                META_NODE_CODE_CONCAT_TWO_MAP,
+                NodeType.BI_TRANSFORMER,
+                (BiTransformer<Map<String, List<Map<String, Object>>>, Map<String, List<Map<String, Object>>>, Map<String, List<Map<String, Object>>>>) (one, two, a) -> Mono.zip(one, two).flatMap(t -> {
+                    t.getT1().putAll(t.getT2());
+                    return Mono.just(t.getT1());
+                }),
+                HashMap.newHashMap(1),
+                List.of(Map.class, Map.class),
+                Map.class,
+                HashMap.newHashMap(1))
+        );
     }
 
     /**

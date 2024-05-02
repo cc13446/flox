@@ -2,18 +2,29 @@ package com.cc.flox.node;
 
 import com.cc.flox.api.ApiManager;
 import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.dataType.DataTypeClassLoader;
 import com.cc.flox.domain.node.NodeType;
 import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
+import com.cc.flox.meta.Constant;
 import com.cc.flox.meta.entity.EndPointEntity;
 import com.cc.flox.meta.entity.FloxEntity;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.utils.AssertUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static com.cc.flox.initializer.meta.MetaSubFloxInitializer.META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT;
+import static com.cc.flox.utils.FormatUtils.YYYY_MM_DD_HH_MM_SS;
 
 /**
  * 节点管理者
@@ -22,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2024/4/26
  */
 @Component
+@Slf4j
 public class NodeManager {
 
     public static final String DATA_NODE_PACKAGE_NAME = "com.cc.flox.data.node";
@@ -101,12 +113,26 @@ public class NodeManager {
      */
     private volatile Map<String, EndPointEntity> endPointMap = Collections.emptyMap();
 
+    /**
+     * 是否启动
+     */
+    private final AtomicBoolean hasStart = new AtomicBoolean(false);
+
+    /**
+     * 更新时间
+     */
+    private final AtomicReference<OffsetDateTime> updateTime = new AtomicReference<>(OffsetDateTime.MIN);
+
     @Resource
     private ApiManager apiManager;
 
     @Resource
     @Lazy
     private DataSourceManager dataSourceManager;
+
+    @Resource
+    @Lazy
+    private DataTypeClassLoader dataTypeClassLoader;
 
     /**
      * @param nodeEntity node
@@ -188,5 +214,32 @@ public class NodeManager {
      */
     public NodeEntity getResponseLoader(String code) {
         return this.metaResponseLoaderMap.get(code);
+    }
+
+    /**
+     * 开始同步
+     */
+    public void startSynchronize() {
+        if (hasStart.compareAndSet(false, true)) {
+            doSynchronize();
+        }
+    }
+
+    /**
+     * 同步数据源
+     */
+    @SuppressWarnings("unchecked")
+    private void doSynchronize() {
+        log.info("Start synchronize node, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
+        this.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT).exec(Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
+            try {
+                // 计算最大updateTime
+                // 更新updateTime
+            } catch (Exception e) {
+                log.error("Synchronize node error : ", e);
+            } finally {
+                Mono.delay(Duration.ofSeconds(10)).subscribe(i -> doSynchronize());
+            }
+        });
     }
 }

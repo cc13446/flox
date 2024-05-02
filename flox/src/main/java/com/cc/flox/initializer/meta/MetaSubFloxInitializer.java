@@ -62,6 +62,9 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
     public static final String META_SUB_FLOX_CODE_UPDATE_ENDPOINT = "meta_sub_update_endpoint";
     public static final String META_SUB_FLOX_CODE_SELECT_ENDPOINT = "meta_sub_select_endpoint";
 
+    // node manager
+    public static final String META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT = "meta_sub_concat_node_flox_endpoint";
+
     @Resource
     private NodeManager nodeManager;
 
@@ -148,6 +151,19 @@ public class MetaSubFloxInitializer implements CommandLineRunner {
         putBaseUpdateMetaSubFlox(META_SUB_FLOX_CODE_UPDATE_ENDPOINT, META_NODE_CODE_UPDATE_ENDPOINT);
         putBaseSelectMetaSubFlox(META_SUB_FLOX_CODE_SELECT_ENDPOINT, META_NODE_CODE_SELECT_ENDPOINT);
 
+        // node manager
+        nodeManager.putMetaSubFlox(
+                META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT,
+                List.of(Map.class),
+                Map.class,
+                Map.of(META_NODE_CODE_SELECT_NODE, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
+                        META_NODE_CODE_SELECT_NODE_RELATION, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
+                        META_NODE_CODE_SELECT_FLOX, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
+                        META_NODE_CODE_SELECT_ENDPOINT, List.of(DefaultSubFlox.PRE_NODE_CODE_PARAM, DefaultSubFlox.PRE_NODE_CODE_DATA_SOURCE_MANAGER),
+                        META_NODE_CODE_CONCAT_NODE_AND_RELATION, List.of(META_NODE_CODE_SELECT_NODE, META_NODE_CODE_SELECT_NODE_RELATION),
+                        META_NODE_CODE_CONCAT_FLOX_AND_ENDPOINT, List.of(META_NODE_CODE_SELECT_FLOX, META_NODE_CODE_SELECT_ENDPOINT),
+                        META_NODE_CODE_CONCAT_TWO_MAP, List.of(META_NODE_CODE_CONCAT_NODE_AND_RELATION, META_NODE_CODE_CONCAT_FLOX_AND_ENDPOINT))
+        );
     }
 
     /**

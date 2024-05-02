@@ -31,4 +31,9 @@ public class Constant {
 
     public static final String CONTENT = "content";
     public static final String PATH = "path";
+
+    public static final String NODE = "node";
+    public static final String NODE_RELATION = "nodeRelation";
+    public static final String FLOX = "flox";
+    public static final String ENDPOINT = "endpoint";
 }
