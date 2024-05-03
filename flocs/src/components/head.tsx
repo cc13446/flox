@@ -12,7 +12,7 @@ const App: React.FC = () => {
                 <p className='font-bold text-3xl text-logo-color'>FLOX</p>
             </div>
             <div className='w-20 h-full flex flex-row justify-between items-center'>
-            <p className='font-bold'>About</p>
+            <p className='font-bold'><a href='https://github.com/cc13446/flox'>About</a></p>
             </div>
         </div>
 
