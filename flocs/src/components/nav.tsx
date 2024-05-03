@@ -1,10 +1,11 @@
+'use client';
 import React from 'react';
 import {
     ApartmentOutlined, ApiOutlined, ControlOutlined, DatabaseOutlined, DeploymentUnitOutlined,
     ForkOutlined, SlidersOutlined, SwapOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
+import { Menu } from 'antd'
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -44,8 +45,13 @@ const items: MenuProps['items'] = [
 ];
 
 const App: React.FC = () => {
+    const onClick: MenuProps['onClick'] = (e) => {
+        console.log('click ', e);
+    };
+
     return (
         <Menu
+            onClick={onClick}
             style={{ width: 256, height: '100%' }}
             mode="inline"
             items={items}
