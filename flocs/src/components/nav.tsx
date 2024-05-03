@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import {
-    ApartmentOutlined, ApiOutlined, ControlOutlined, DatabaseOutlined, DeploymentUnitOutlined,
+    ApartmentOutlined, ApiOutlined, ControlOutlined, CloudOutlined, DatabaseOutlined, DeploymentUnitOutlined,
     ForkOutlined, SlidersOutlined, SwapOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
@@ -38,15 +38,22 @@ const items: MenuProps['items'] = [
         getItem(<p className='select-none'>节点定义</p>, 'node', <SwapOutlined />),
         getItem(<p className='select-none'>子流程配置</p>, 'subFlox', <ForkOutlined />),
         getItem(<p className='select-none'>流程配置</p>, 'flox', <ApartmentOutlined />),
+        getItem(<p className='select-none'>端点配置</p>, 'endpoint', <CloudOutlined />),
     ]),
 
     { type: 'divider' },
 
 ];
 
-const App: React.FC = () => {
+interface Props {
+    setActiveContent: React.Dispatch<React.SetStateAction<string>>
+}
+
+const App: React.FC<Props> = (props: Props) => {
+
+    const setActiveContent = props.setActiveContent;
     const onClick: MenuProps['onClick'] = (e) => {
-        console.log('click ', e);
+        setActiveContent(e.key);
     };
 
     return (
