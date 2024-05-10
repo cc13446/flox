@@ -7,31 +7,31 @@ import Node from './content/node'
 import SubFlox from './content/subFlox'
 import Flox from './content/flox'
 import Endpoint from './content/endpoint'
-
+import ContentEnum from '../lib/contentEnum'
 
 interface Props {
-    activeContent: String,
+    activeContent: ContentEnum,
 }
 
 const App: React.FC<Props> = (props: Props) => {
 
     const renderComponent = () => {
         switch (props.activeContent) {
-            case 'head':
+            case ContentEnum.HEAD:
                 return <Head />;
-            case 'connect':
+            case ContentEnum.CONNECT:
                 return <Connect />;
-            case 'action':
+            case ContentEnum.ACTION:
                 return <Action />;
-            case 'dataType':
+            case ContentEnum.DATATYPE:
                 return <DataType />;
-            case 'node':
+            case ContentEnum.NODE:
                 return <Node />;
-            case 'subFlox':
+            case ContentEnum.SUBFLOX:
                 return <SubFlox />;
-            case 'flox':
+            case ContentEnum.FLOX:
                 return <Flox />;
-            case 'endpoint':
+            case ContentEnum.ENDPOINT:
                 return <Endpoint />;
             default:
                 return null;
