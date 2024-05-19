@@ -16,8 +16,10 @@ import io.r2dbc.pool.ConnectionPool;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 
@@ -71,6 +73,12 @@ public class DataSourceManager {
      * 数据源 Map
      */
     private volatile Map<String, DataSource> dataSources = Collections.emptyMap();
+
+    /**
+     * 事务Map
+     * taskId -> dataSourceCode -> TransactionalOperator
+     */
+    private final Map<String, Map<String, TransactionalOperator>> transactionalOperatorMap = new ConcurrentHashMap<>();
 
     @Resource
     private ExecutorInvoker invoker;
@@ -191,6 +199,18 @@ public class DataSourceManager {
         TemplateRenderContext context = new TemplateRenderContext(action, param, dataSource.getDataSourceType());
         context = invoker.invoke(TemplateRenderExecutor.class, context);
 
+        if (execContext.isTransaction()) {
+            R2dbcTransactionManager m = new R2dbcTransactionManager(dataSource.getTemplate().getDatabaseClient().getConnectionFactory());
+            TransactionalOperator o = TransactionalOperator.create(m);
+            transactionalOperatorMap.compute(execContext.getTaskId(), (key, map) -> {
+                if (Objects.isNull(map)) {
+                    map = HashMap.newHashMap(16);
+                }
+                map.put(dataSource.getCode(), o);
+                return map;
+            });
+        }
+
         HolderUtils<DatabaseClient.GenericExecuteSpec> spec = new HolderUtils<>(dataSource.getTemplate().getDatabaseClient().sql(context.getRenderedSQL()));
         if (context.isCustomBind()) {
             spec.setHolder(spec.getHolder().bindValues(context.getCustomBindParam()));
@@ -206,5 +226,24 @@ public class DataSourceManager {
             }));
         }
         return spec.getHolder().fetch().all().collectList();
+    }
+
+    /**
+     * 包装事务
+     *
+     * @param taskId 任务Id
+     * @param flox   flox
+     * @return result
+     */
+    public Mono<Void> wrapTransaction(String taskId, Mono<Void> flox) {
+        if (this.transactionalOperatorMap.containsKey(taskId)) {
+            Map<String, TransactionalOperator> operatorMap = transactionalOperatorMap.remove(taskId);
+            if (!CollectionUtils.isEmpty(operatorMap)) {
+                for (TransactionalOperator o : operatorMap.values()) {
+                    flox = flox.as(o::transactional);
+                }
+            }
+        }
+        return flox;
     }
 }

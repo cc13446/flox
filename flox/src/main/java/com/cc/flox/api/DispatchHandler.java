@@ -1,8 +1,8 @@
 package com.cc.flox.api;
 
 import com.cc.flox.api.endpoint.ApiExchange;
-import com.cc.flox.api.error.ApiErrorHandler;
 import com.cc.flox.domain.node.NodeExecContext;
+import com.cc.flox.node.FloxWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +32,7 @@ public class DispatchHandler implements HttpHandler {
     private ApiManager apiManager;
 
     @Resource
-    private ApiErrorHandler apiErrorHandler;
+    private FloxWrapper floxWrapper;
 
     @Override
     public @NonNull Mono<Void> handle(@NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
@@ -51,6 +51,6 @@ public class DispatchHandler implements HttpHandler {
         exchange.setRequest(request);
         exchange.setResponse(response);
         exchange.setContext(new NodeExecContext(UUID.randomUUID().toString()));
-        return apiManager.handle(exchange).onErrorResume((ex) -> apiErrorHandler.handle(exchange, ex));
+        return floxWrapper.wrap(exchange, () -> apiManager.handle(exchange));
     }
 }
