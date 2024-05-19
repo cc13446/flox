@@ -1,6 +1,7 @@
 package com.cc.flox.domain.flox;
 
 import com.cc.flox.api.endpoint.ApiExchange;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.meta.entity.NodeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,8 +36,10 @@ public class Flox {
      * handler
      */
     public Mono<Void> handler(ApiExchange exchange) {
-        Mono<Object> res = requestExtractor.exec(Mono.just(exchange.getRequest())).cache();
-        return responseLoader.exec(subFlox.exec(res), Mono.just(exchange.getResponse())).mapNotNull(o -> null);
+        Mono<NodeExecContext> context = Mono.just(exchange.getContext()).cache();
+        Mono<Object> res = requestExtractor.exec(context, Mono.just(exchange.getRequest())).cache();
+        res = subFlox.exec(context, res);
+        return responseLoader.exec(context, res, Mono.just(exchange.getResponse())).mapNotNull(o -> null);
     }
 
 }

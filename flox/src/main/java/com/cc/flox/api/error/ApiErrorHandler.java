@@ -44,7 +44,10 @@ public class ApiErrorHandler {
         NodeEntity responseLoader = nodeManager.getResponseLoader(META_RESPONSE_LOADER_CODE_WRITE_JSON);
         log.error("Exec error : ", ex);
         String msg = ex.getMessage() + Optional.ofNullable(ex.getCause()).map(Throwable::getMessage).orElse("");
-        return responseLoader.exec(Mono.just(ApiResponseWrapper.error(code, msg)), Mono.just(exchange.getResponse())).mapNotNull(o -> null);
+        return responseLoader.exec(
+                Mono.just(exchange.getContext()),
+                Mono.just(ApiResponseWrapper.error(code, msg)),
+                Mono.just(exchange.getResponse())).mapNotNull(o -> null);
     }
 
 }

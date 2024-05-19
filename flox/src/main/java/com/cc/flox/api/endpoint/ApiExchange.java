@@ -1,5 +1,6 @@
 package com.cc.flox.api.endpoint;
 
+import com.cc.flox.domain.node.NodeExecContext;
 import lombok.Data;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -10,6 +11,11 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
  */
 @Data
 public class ApiExchange {
+
+    /**
+     * 执行环境
+     */
+    private NodeExecContext context;
 
     /**
      * HTTP 请求

@@ -3,7 +3,6 @@ package com.cc.flox.domain.node;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author cc
@@ -11,5 +10,5 @@ import java.util.Map;
  */
 @FunctionalInterface
 public interface NodeExecFunction {
-    Mono<Object> exec(Node node, List<Mono<Object>> param, Mono<Map<String, Object>> attribute);
+    Mono<Object> exec(Node node, List<Mono<Object>> param, Mono<NodeExecContext> context);
 }

@@ -1,6 +1,7 @@
 package com.cc.flox.meta.entity;
 
 import com.cc.flox.domain.node.Node;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.domain.node.NodeType;
 import com.cc.flox.utils.AssertUtils;
 import reactor.core.publisher.Mono;
@@ -38,27 +39,30 @@ public record NodeEntity(
     }
 
     /**
-     * @param param 参数
+     * @param context 上下文
+     * @param param   参数
      * @return node 执行结果
      */
-    public Mono<Object> exec(Mono<Object> param) {
-        return exec(List.of(param));
+    public Mono<Object> exec(Mono<NodeExecContext> context, Mono<Object> param) {
+        return exec(context, List.of(param));
     }
 
     /**
-     * @param param1 参数
-     * @param param2 参数
+     * @param context 上下文
+     * @param param1  参数
+     * @param param2  参数
      * @return node 执行结果
      */
-    public Mono<Object> exec(Mono<Object> param1, Mono<Object> param2) {
-        return exec(List.of(param1, param2));
+    public Mono<Object> exec(Mono<NodeExecContext> context, Mono<Object> param1, Mono<Object> param2) {
+        return exec(context, List.of(param1, param2));
     }
 
     /**
-     * @param params 参数
+     * @param context 上下文
+     * @param params  参数
      * @return node 执行结果
      */
-    public Mono<Object> exec(List<Mono<Object>> params) {
+    public Mono<Object> exec(Mono<NodeExecContext> context, List<Mono<Object>> params) {
         // 检查参数
         List<Mono<Object>> checkedParams = IntStream.range(0, nodeType.getParamSize()).mapToObj(i -> {
             Mono<Object> param = params.get(i);
@@ -67,7 +71,8 @@ public record NodeEntity(
         }).collect(Collectors.toList());
 
         // 计算
-        Mono<Object> result = nodeType.getExecFunction().exec(node, checkedParams, Mono.just(attribute));
+        context = context.doOnNext(c -> c.setAttribute(attribute));
+        Mono<Object> result = nodeType.getExecFunction().exec(node, checkedParams, context);
 
         // 检查结果
         return result.doOnNext(o -> AssertUtils.assertTrue(resultClass.isAssignableFrom(o.getClass()), "Node [" + nodeCode + "] must return [" + resultClass.getCanonicalName() + "] but return [" + o.getClass().getCanonicalName() + "]"));

@@ -7,6 +7,7 @@ import com.cc.flox.dataSource.DataSourceManager;
 import com.cc.flox.dataType.DataTypeClassLoader;
 import com.cc.flox.domain.flox.FloxBuilder;
 import com.cc.flox.domain.node.Node;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.domain.node.NodeType;
 import com.cc.flox.domain.subFlox.impl.DefaultSubFlox;
 import com.cc.flox.meta.Constant;
@@ -245,7 +246,9 @@ public class NodeManager {
     @SuppressWarnings("unchecked")
     private void doSynchronize() {
         log.info("Start synchronize node, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
-        this.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT).exec(Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
+        NodeExecContext context = new NodeExecContext("NodeManagerSynchronize");
+        context.setTransaction(false);
+        this.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_NODE_FLOX_ENDPOINT).exec(Mono.just(context), Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
             try {
                 Map<String, List<Map<String, Object>>> res = (Map<String, List<Map<String, Object>>>) l;
                 List<Map<String, Object>> nodeRelation = res.get(Constant.NODE_RELATION);

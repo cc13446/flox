@@ -1,6 +1,7 @@
 package com.cc.flox.domain.subFlox.impl;
 
 import com.cc.flox.dataSource.DataSourceManager;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.domain.subFlox.SubFlox;
 import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.utils.AssertUtils;
@@ -52,7 +53,7 @@ public class DefaultSubFlox implements SubFlox {
     }
 
     @Override
-    public Mono<Object> handle(Mono<Object> param, Mono<Map<String, Object>> attribute) {
+    public Mono<Object> handle(Mono<Object> param, Mono<NodeExecContext> context) {
         AssertUtils.assertTrue(!CollectionUtils.isEmpty(nodeMap), "SubFlox must have nodes");
 
         Map<String, List<String>> preNodeMap = nodeMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().subFloxPreNodeCodeMap().get(code)));
@@ -60,7 +61,7 @@ public class DefaultSubFlox implements SubFlox {
 
         checkNodeMap(preNodeMap, postNodeMap);
 
-        return execNodes(param, preNodeMap, postNodeMap);
+        return execNodes(param, context, preNodeMap, postNodeMap);
     }
 
     /**
@@ -78,11 +79,16 @@ public class DefaultSubFlox implements SubFlox {
     }
 
     /**
+     * @param param       参数
+     * @param context     执行上下文
      * @param preNodeMap  pre node map
      * @param postNodeMap post node map
      * @return 执行结果
      */
-    private Mono<Object> execNodes(Mono<Object> param, Map<String, List<String>> preNodeMap, Map<String, List<String>> postNodeMap) {
+    private Mono<Object> execNodes(Mono<Object> param,
+                                   Mono<NodeExecContext> context,
+                                   Map<String, List<String>> preNodeMap,
+                                   Map<String, List<String>> postNodeMap) {
         Map<String, Mono<Object>> execResultMap = HashMap.newHashMap(nodeMap.size());
         Stack<String> execStack = new Stack<>();
         String root = postNodeMap.entrySet().stream().filter(e -> CollectionUtils.isEmpty(e.getValue())).map(Map.Entry::getKey).findFirst().orElseThrow();
@@ -108,7 +114,7 @@ public class DefaultSubFlox implements SubFlox {
                     }
                     default -> throw new RuntimeException("Invalid node type : " + nodeEntity.nodeType());
                 }
-                Mono<Object> result = nodeEntity.exec(p).cache();
+                Mono<Object> result = nodeEntity.exec(context, p).cache();
                 execResultMap.put(execStack.peek(), result);
                 execStack.pop();
             } else {

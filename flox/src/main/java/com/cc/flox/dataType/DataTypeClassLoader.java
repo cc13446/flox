@@ -1,5 +1,6 @@
 package com.cc.flox.dataType;
 
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.meta.Constant;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.JavaCodeUtils;
@@ -66,7 +67,9 @@ public class DataTypeClassLoader extends ClassLoader {
     @SuppressWarnings("unchecked")
     private void doSynchronize() {
         log.info("Start synchronize data type, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
-        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE).exec(Mono.just(Map.of(Constant.UPDATE_TIME, List.of(updateTime.get())))).subscribe(l -> {
+        NodeExecContext context = new NodeExecContext("DataTypeManagerSynchronize");
+        context.setTransaction(false);
+        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_SELECT_DATA_TYPE).exec(Mono.just(context), Mono.just(Map.of(Constant.UPDATE_TIME, List.of(updateTime.get())))).subscribe(l -> {
             try {
                 List<Map<String, Object>> nodes = (List<Map<String, Object>>) l;
                 Map<String, String> map = nodes.stream().collect(Collectors.toMap(m -> m.get(Constant.PATH).toString(), m -> m.get(Constant.CONTENT).toString()));

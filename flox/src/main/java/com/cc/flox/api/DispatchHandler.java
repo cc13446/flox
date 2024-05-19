@@ -2,6 +2,7 @@ package com.cc.flox.api;
 
 import com.cc.flox.api.endpoint.ApiExchange;
 import com.cc.flox.api.error.ApiErrorHandler;
+import com.cc.flox.domain.node.NodeExecContext;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.annotation.NonNull;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Http 请求处理器
@@ -48,6 +50,7 @@ public class DispatchHandler implements HttpHandler {
         ApiExchange exchange = new ApiExchange();
         exchange.setRequest(request);
         exchange.setResponse(response);
+        exchange.setContext(new NodeExecContext(UUID.randomUUID().toString()));
         return apiManager.handle(exchange).onErrorResume((ex) -> apiErrorHandler.handle(exchange, ex));
     }
 }

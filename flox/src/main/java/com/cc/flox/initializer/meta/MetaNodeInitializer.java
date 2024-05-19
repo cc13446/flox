@@ -136,7 +136,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 META_NODE_CODE_UPDATE_DATA_SOURCE_UPDATE_TIME_BATCH,
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, "updateDataSourceUpdateTimeBatch"),
+                Map.of(DataSourceManager.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceManager.ACTION_CODE, "updateDataSourceUpdateTimeBatch"),
                 List.of(List.class, DataSourceManager.class),
                 List.class,
                 HashMap.newHashMap(1))
@@ -355,7 +355,7 @@ public class MetaNodeInitializer implements CommandLineRunner {
                 nodeCode,
                 NodeType.DATA_SOURCE_LOADER,
                 DATA_SOURCE_LOADER,
-                Map.of(DataSourceLoader.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceLoader.ACTION_CODE, actionCode),
+                Map.of(DataSourceManager.DATA_SOURCE_CODE, MetaDataSourceConfig.META_DATA_SOURCE_KEY, DataSourceManager.ACTION_CODE, actionCode),
                 paramClassList,
                 resultClass,
                 HashMap.newHashMap(1))

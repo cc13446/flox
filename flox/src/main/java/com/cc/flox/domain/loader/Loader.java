@@ -1,10 +1,10 @@
 package com.cc.flox.domain.loader;
 
 import com.cc.flox.domain.node.Node;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.domain.node.NodeType;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
 
 /**
  * @author cc
@@ -12,7 +12,8 @@ import java.util.Map;
  */
 @FunctionalInterface
 public interface Loader<Source, Destination, Result> extends Node {
-    Mono<Result> loader(Mono<Source> source, Mono<Destination> destination, Mono<Map<String, Object>> attribute);
+
+    Mono<Result> loader(Mono<Source> source, Mono<Destination> destination, Mono<NodeExecContext> context);
 
     @Override
     default NodeType getType() {

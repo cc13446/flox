@@ -3,9 +3,11 @@ package com.cc.flox.dataSource;
 import com.cc.flox.dataSource.action.Action;
 import com.cc.flox.dataSource.template.TemplateRenderContext;
 import com.cc.flox.dataSource.template.TemplateRenderExecutor;
+import com.cc.flox.domain.node.NodeExecContext;
 import com.cc.flox.executor.ExecutorInvoker;
 import com.cc.flox.meta.Constant;
 import com.cc.flox.meta.entity.DataSourcesEntity;
+import com.cc.flox.meta.entity.NodeEntity;
 import com.cc.flox.node.NodeManager;
 import com.cc.flox.utils.AssertUtils;
 import com.cc.flox.utils.HolderUtils;
@@ -38,6 +40,17 @@ import static com.cc.flox.utils.FormatUtils.YYYY_MM_DD_HH_MM_SS;
 @Slf4j
 @Component
 public class DataSourceManager {
+
+
+    /**
+     * dataSourceCode
+     */
+    public static final String DATA_SOURCE_CODE = "dataSourceCode";
+
+    /**
+     * actionCode
+     */
+    public static final String ACTION_CODE = "actionCode";
 
     /**
      * 是否启动
@@ -79,7 +92,10 @@ public class DataSourceManager {
      */
     private void doSynchronize() {
         log.info("Start synchronize data source, {}", updateTime.get().format(YYYY_MM_DD_HH_MM_SS));
-        nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION).exec(Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
+        NodeEntity nodeEntity = nodeManager.getMetaSubFlox(META_SUB_FLOX_CODE_CONCAT_DATA_SOURCE_AND_ACTION);
+        NodeExecContext context = new NodeExecContext("DataSourceManagerSynchronize");
+        context.setTransaction(false);
+        nodeEntity.exec(Mono.just(context), Mono.just(Map.of(Constant.UPDATE_TIME, updateTime.get()))).subscribe(l -> {
             try {
                 DataSourcesEntity dataSources = (DataSourcesEntity) l;
                 if (!dataSources.update()) {
@@ -159,13 +175,13 @@ public class DataSourceManager {
     /**
      * 执行动作
      *
-     * @param dataSourceCode dataSourceCode
-     * @param actionCode     actionCode
-     * @param param          参数
+     * @param execContext execContext
+     * @param param       参数
      * @return 结果
      */
-    public Mono<List<Map<String, Object>>> exec(String dataSourceCode, String
-            actionCode, Map<String, Object> param) {
+    public Mono<List<Map<String, Object>>> exec(NodeExecContext execContext, Map<String, Object> param) {
+        String dataSourceCode = (String) execContext.getAttribute().get(DATA_SOURCE_CODE);
+        String actionCode = (String) execContext.getAttribute().get(ACTION_CODE);
         DataSource dataSource = get(dataSourceCode);
         AssertUtils.assertNonNull(dataSourceCode, "Exec data source action error, unknown data source : " + dataSourceCode);
 
