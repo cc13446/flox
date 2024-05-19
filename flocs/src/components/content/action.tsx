@@ -1,16 +1,24 @@
 'use client'
-import React, { useEffect } from 'react';
-
-import Fetch, { IRequestParams, BodyType } from '../../lib/backend';
+import React, { useEffect, useState } from 'react';
+import Fetch, { BodyType } from '../../lib/backend';
 
 const App: React.FC = () => {
 
+    const [action, setAction] = useState({});
+
+    const loadAction = () => {
+        Fetch({ path: '/data-source/action/select', method: 'get', bodyType: BodyType.FORM, data: {} }).then(a => {
+            setAction(a);
+        });
+    }
+
     useEffect(() => {
-        console.log('Action has mounted.');
+        loadAction();
         return () => {
-            console.log('Action will unmount.');
+            setAction({});
         };
     }, []);
+
 
 
     return (

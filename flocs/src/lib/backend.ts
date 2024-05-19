@@ -27,7 +27,8 @@ export enum BodyType {
 export default async (params: IRequestParams): Promise<any> => {
     try {
         const headers = new AxiosHeaders();
-        headers.set('Content-Type', params.bodyType)
+        headers.set('Content-Type', params.bodyType);
+        headers.set('Access-Control-Allow-Origin', '*');
         const config: AxiosRequestConfig<any> = {
             url: params.path,
             method: params.method,
